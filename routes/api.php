@@ -3,8 +3,10 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/tasks', 'TaskController@index');
-Route::get('/tasks/{id}', 'TaskController@show');
-Route::post('/tasks', 'TaskController@store');
-Route::put('/tasks/{id}', 'TaskController@update');
-Route::delete('/tasks/{id}', 'TaskController@destroy');
+use App\Http\Controllers\Api\EmpresasController;
+
+Route::get('empresas', [EmpresasController::class, 'index']);
+Route::post('empresas', [EmpresasController::class, 'store']);
+Route::get('empresas/{id}', [EmpresasController::class, 'show']);
+Route::put('empresas/{id}', [EmpresasController::class, 'update']);
+Route::delete('empresas/{id}', [EmpresasController::class, 'destroy']);
