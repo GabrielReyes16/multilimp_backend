@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ClienteSeeder::class,
             EmpresaSeeder::class,
             ProveedorSeeder::class,
+            TransporteSeeder::class,
         ]);
     }
 }

@@ -8,4 +8,24 @@ use Illuminate\Database\Eloquent\Model;
 class Transporte extends Model
 {
     use HasFactory;
+
+    protected $table = 'transportes';
+
+    protected $fillable = [
+        'ruc',
+        'razon_social',
+        'departamento',
+        'provincia',
+        'distrito',
+        'direccion',
+        'cobertura',
+        'estado',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public $timestamps = true;
 }
