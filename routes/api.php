@@ -4,9 +4,10 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\EmpresasController;
+use App\Http\Controllers\Api\ClientesController;
 
-Route::get('empresas', [EmpresasController::class, 'index']);
-Route::post('empresas', [EmpresasController::class, 'store']);
-Route::get('empresas/{id}', [EmpresasController::class, 'show']);
-Route::put('empresas/{id}', [EmpresasController::class, 'update']);
-Route::delete('empresas/{id}', [EmpresasController::class, 'destroy']);
+//Empresas
+Route::apiResource('empresas', EmpresasController::class);
+
+//Clientes
+Route::apiResource('clientes', ClientesController::class);
