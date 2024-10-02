@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->string('correo')->nullable();
             $table->string('web')->nullable();
-            $table->text('direcciones')->nullable(); // Cambiado a 'text' para cadenas largas
+            $table->string('direcciones')->nullable(); // Cambiado a 'text' para cadenas largas
             $table->string('telefono')->nullable();
             $table->integer('estado')->nullable();
             $table->timestamps(); // Esto crea created_at y updated_at
