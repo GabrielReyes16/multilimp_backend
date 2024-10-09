@@ -19,6 +19,10 @@ class DatabaseSeeder extends Seeder
             EmpresaSeeder::class,
             ProveedorSeeder::class,
             TransporteSeeder::class,
+            SeguimientosSeeder::class,
+            ContrasSeeder::class,
+            ContactoClientesSeeder::class,
+            CatalogoEmpresasSeeder::class,
         ]);
     }
 }
