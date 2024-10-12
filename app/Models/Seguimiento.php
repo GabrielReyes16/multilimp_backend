@@ -12,7 +12,7 @@ class Seguimiento extends Model
     protected $table = 'seguimientos';
 
     protected $fillable = [
-        'fecha_emision', 'oce', 'ocf', 'id_empresa', 'id_cliente', 'catalogo',
+        'fecha_emision', 'oce_doc_path', 'ocf_doc_path', 'id_empresa', 'id_cliente', 'catalogo',
         'fecha_form', 'fecha_max_form', 'monto_venta', 'siaf', 'cprovincia',
         'cdistrito', 'cdepartamento', 'cdireccion', 'creferencia', 'productos',
         'etapa_siaf', 'fecha_siaf', 'factura', 'fecha_factura', 'grr', 'retencion',

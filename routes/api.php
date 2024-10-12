@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ContactoClientesController;
 use App\Http\Controllers\Api\CatalogoEmpresasController;
 use App\Http\Controllers\Api\SeguimientosController;
 
+
 //Empresas
 Route::apiResource('empresas', EmpresasController::class);
 

@@ -12,8 +12,8 @@ class SeguimientosSeeder extends Seeder
         Seguimiento::insert([
             [
                 'fecha_emision' => '2024-02-09',
-                'oce' => 'public/doc/OCAM-2024-200035-2-0.pdf',
-                'ocf' => 'public/doc/20100116392',
+                'oce_doc_path' => 'public/doc/OCAM-2024-200035-2-0.pdf',
+                'ocf_doc_path' => 'public/doc/20100116392',
                 'id_empresa' => 7,
                 'id_cliente' => 584,
                 'catalogo' => 'EXT-CE-2021-3',

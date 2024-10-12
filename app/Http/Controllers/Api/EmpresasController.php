@@ -15,7 +15,7 @@ class EmpresasController extends Controller
     public function index()
     {
         $empresas = Empresa::all();
-        return response()->json($empresas, Response::HTTP_OK);
+        return response()->json($empresas);
     }
 
     /**
