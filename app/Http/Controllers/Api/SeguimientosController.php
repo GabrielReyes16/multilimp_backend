@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\ContactoCliente;
+use App\Models\Contra;
 use App\Models\Empresa;
 use App\Models\Seguimiento;
-use App\Models\Contra;
-use App\Models\ContactoCliente;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SeguimientosController extends Controller
 {
@@ -25,7 +25,6 @@ class SeguimientosController extends Controller
         $seguimientos = Seguimiento::all();
         return response()->json($seguimientos, 200);
     }
-
 
     // Crear un nuevo seguimiento (POST)
     public function store(Request $request)
@@ -130,112 +129,136 @@ class SeguimientosController extends Controller
     }
 
     public function show($id)
-{
-    try {
-        // Obtener la contraseña (por ejemplo, para validar acceso)
-        $contra = Contra::find(1);
+    {
+        try {
+            // Obtener la contraseña (por ejemplo, para validar acceso)
+            $contra = Contra::find(1);
 
-        // Obtener el seguimiento específico, lanzar error 404 si no se encuentra
-        $seguimiento = Seguimiento::findOrFail($id);
+            // Obtener el seguimiento específico, lanzar error 404 si no se encuentra
+            $seguimiento = Seguimiento::findOrFail($id);
 
-        // Obtener los clientes cuyo estado no sea 1 o que tengan estado nulo
-        $clientes = Cliente::where('estado', '<>', 1)->orWhereNull('estado')->get();
+            // Obtener los clientes cuyo estado no sea 1 o que tengan estado nulo
+            $clientes = Cliente::where('estado', '<>', 1)->orWhereNull('estado')->get();
 
-        // Obtener las empresas cuyo estado no sea 1 o que tengan estado nulo
-        $empresas = Empresa::where('estado', '<>', 1)->orWhereNull('estado')->get();
+            // Obtener las empresas cuyo estado no sea 1 o que tengan estado nulo
+            $empresas = Empresa::where('estado', '<>', 1)->orWhereNull('estado')->get();
 
-        // Obtener los contactos del cliente asociado al seguimiento
-        $contactos = ContactoCliente::where('id_cliente', '=', $seguimiento->id_cliente)->get();
+            // Obtener los contactos del cliente asociado al seguimiento
+            $contactos = ContactoCliente::where('id_cliente', '=', $seguimiento->id_cliente)->get();
 
-        // Retornar los datos en formato JSON con código 200 (OK)
-        return response()->json([
-            'contra' => $contra,
-            'seguimiento' => $seguimiento,
-            'clientes' => $clientes,
-            'empresas' => $empresas,
-            'contactos' => $contactos
-        ], 200);
+            // Retornar los datos en formato JSON con código 200 (OK)
+            return response()->json([
+                'contra' => $contra,
+                'seguimiento' => $seguimiento,
+                'clientes' => $clientes,
+                'empresas' => $empresas,
+                'contactos' => $contactos,
+            ], 200);
 
-    } catch (ModelNotFoundException $e) {
-        // Si no se encuentra el seguimiento, retornar mensaje de error con código 404 (No encontrado)
-        return response()->json(['message' => 'Seguimiento no encontrado'], 404);
-    } catch (\Exception $e) {
-        // Retornar mensaje genérico de error si ocurre algún otro problema con código 500 (Error interno)
-        return response()->json(['message' => 'Error interno del servidor', 'error' => $e->getMessage()], 500);
+        } catch (ModelNotFoundException $e) {
+            // Si no se encuentra el seguimiento, retornar mensaje de error con código 404 (No encontrado)
+            return response()->json(['message' => 'Seguimiento no encontrado'], 404);
+        } catch (\Exception $e) {
+            // Retornar mensaje genérico de error si ocurre algún otro problema con código 500 (Error interno)
+            return response()->json(['message' => 'Error interno del servidor', 'error' => $e->getMessage()], 500);
+        }
     }
-}
 
     // Actualizar un seguimiento (PUT/PATCH)
     public function update(Request $request, $id)
     {
-        $response = []; // Variable para almacenar la respuesta
-        $statusCode = 200; // Código de estado predeterminado
-
         try {
-            // Verificar si el seguimiento existe
+                    // Log para ver los datos recibidos
+        \Log::info($request->all());
+            // Verificar si el seguimiento existe primero
             $seguimiento = Seguimiento::find($id);
-
             if (!$seguimiento) {
-                $response = ['message' => self::NOT_FOUND_MSG];
-                $statusCode = 404;
-                throw new \Exception('Seguimiento no encontrado', 404); // Lanza una excepción para manejarlo en el catch
+                return response()->json(['message' => 'Seguimiento no encontrado'], 404); // Respuesta si no se encuentra
             }
 
-            // Mostrar lo que está trayendo el request (para propósitos de depuración)
-            \Log::info('Datos recibidos en la actualización:', $request->all());
-
-            // Validar los datos que vienen en la petición
+            // Validar los datos recibidos en el request
             $validatedData = $request->validate([
+                'fecha_emision' => self::FORMAT_DATE,
+                'oce' => 'nullable|file|mimes:pdf',
+                'ocf' => 'nullable|file|mimes:pdf',
                 'id_empresa' => 'required|integer|exists:empresas,id',
                 'id_cliente' => 'required|integer|exists:clientes,id',
                 'catalogo' => self::NULLABLE_STRING_RULE,
-                'monto_venta' => 'required|numeric',
-                'fecha_emision' => self::FORMAT_DATE,
+                'fecha_form' => self::FORMAT_DATE,
+                'fecha_max_form' => self::FORMAT_DATE,
+                'fecha_siaf' => self::FORMAT_DATE,
+                'monto_venta' => 'nullable|numeric',
+                'cdireccion' => self::NULLABLE_STRING_RULE,
+                'cdepartamento' => self::NULLABLE_STRING_RULE,
+                'cprovincia' => self::NULLABLE_STRING_RULE,
+                'cdistrito' => self::NULLABLE_STRING_RULE,
+                'productos' => self::NULLABLE_STRING_RULE,
+                'siaf' => self::NULLABLE_STRING_RULE,
+                'etapa_siaf' => self::NULLABLE_STRING_RULE,
+                'contacto_cliente' => self::NULLABLE_STRING_RULE,
             ]);
+
+            // Manejo del archivo OCE
+            if ($request->hasFile('oce')) {
+                $nombreArchivoOce = $request->file('oce')->getClientOriginalName();
+                $oce_doc_path = 'docs/' . $nombreArchivoOce;
+
+                // Verificar si el archivo ya existe
+                if (Storage::disk('public')->exists($oce_doc_path)) {
+                    return response()->json(['message' => 'El archivo OCE ya existe en el sistema.'], 422);
+                }
+
+                // Eliminar el archivo existente
+                if ($seguimiento->oce && Storage::disk('public')->exists($seguimiento->oce)) {
+                    Storage::delete($seguimiento->oce);
+                }
+
+                // Guardar el archivo si no existe
+                $request->file('oce')->storeAs('docs', $nombreArchivoOce, 'public');
+                $validatedData['oce'] = $oce_doc_path; // Guardar la ruta en la base de datos
+            }
+
+            // Manejo del archivo OCF
+            if ($request->hasFile('ocf')) {
+                $nombreArchivoOcf = $request->file('ocf')->getClientOriginalName();
+                $ocf_doc_path = 'docs/' . $nombreArchivoOcf;
+
+                // Verificar si el archivo ya existe
+                if (Storage::disk('public')->exists($ocf_doc_path)) {
+                    return response()->json(['message' => 'El archivo OCF ya existe en el sistema.'], 422);
+                }
+
+                // Eliminar el archivo existente
+                if ($seguimiento->ocf && Storage::disk('public')->exists($seguimiento->ocf)) {
+                    Storage::delete($seguimiento->ocf);
+                }
+
+                // Guardar el archivo si no existe
+                $request->file('ocf')->storeAs('docs', $nombreArchivoOcf, 'public');
+                $validatedData['ocf'] = $ocf_doc_path; // Guardar la ruta en la base de datos
+            }
+            // Formato del monto de venta
+            if (!empty($request->monto_venta)) {
+                $validatedData['monto_venta'] = number_format(floatval(preg_replace("/[^0-9.-]/", "", $request->monto_venta)), 2, '.', '');
+            }
 
             // Actualizar el seguimiento con los datos validados
             $seguimiento->update($validatedData);
 
-            $response = [
-                'message' => 'Seguimiento actualizado exitosamente',
-                'seguimiento' => $seguimiento,
-            ];
-
+            return response()->json([
+                'message' => 'Seguimiento actualizado correctamente.',
+                'data' => $seguimiento,
+            ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Capturar errores de validación
-            $response = [
-                'message' => 'Errores de validación',
+            return response()->json([
+                'message' => 'Errores de validacion',
                 'errors' => $e->errors(),
-            ];
-            $statusCode = 422;
+            ], 422);
         } catch (\Exception $e) {
-            // Capturar cualquier otro tipo de error o excepción
-            \Log::error('Error en la actualización del seguimiento: ' . $e->getMessage());
-            $response = [
+            return response()->json([
                 'message' => 'Error interno del servidor',
                 'error' => $e->getMessage(),
-            ];
-            $statusCode = 500;
+            ], 500);
         }
-
-        return response()->json($response, $statusCode); // Retornar respuesta al final
-    }
-
-
-    // Eliminar un seguimiento (DELETE)
-    public function destroy($id)
-    {
-        $seguimiento = Seguimiento::find($id);
-
-        if (!$seguimiento) {
-            return response()->json(['message' => 'Seguimiento no encontrado'], 404);
-        }
-
-        // Eliminar el seguimiento
-        $seguimiento->delete();
-
-        return response()->json([
-            'message' => 'Seguimiento eliminado exitosamente',
-        ], 200);
     }
 }
