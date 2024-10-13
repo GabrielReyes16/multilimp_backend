@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
+use Carbon\Exceptions\InvalidFormatException;
 
 use App\Models\Cliente;
 use App\Models\Empresa;
@@ -15,6 +15,8 @@ use App\Models\CotizacionProducto;
 
 class CotizacionController extends Controller
 {
+    private const NOT_FOUND = 'Cotización no encontrada';
+    private const MONTO_PATTERN = "/[^0-9.-]/";
 
     public function index(Request $request)
     {
@@ -55,7 +57,7 @@ class CotizacionController extends Controller
         $datos->id_cliente = $request->id_cliente;
         $datos->id_empresa = $request->id_empresa;
         $datos->id_contacto_cliente = $request->id_contacto_cliente;
-        $datos->monto = number_format(floatval(preg_replace("/[^0-9.-]/", "", $request->monto)), 2, '.', '');
+        $datos->monto = number_format(floatval(preg_replace(self::MONTO_PATTERN, "", $request->monto)), 2, '.', '');
         $datos->tipo_pago = $request->tipo_pago;
         $datos->nota_pago = $request->nota_pago;
         $datos->nota_pedido = $request->nota_pedido;
@@ -77,7 +79,7 @@ class CotizacionController extends Controller
         $cotizacion = Cotizacion::find($id);
 
         if (!$cotizacion) {
-            return response()->json(['error' => 'Cotización no encontrada'], 404);
+            return response()->json(['error' => self::NOT_FOUND], 404);
         }
 
         return response()->json($cotizacion, 200);
@@ -100,12 +102,12 @@ class CotizacionController extends Controller
 
         $cotizacion = Cotizacion::find($id);
         if (!$cotizacion) {
-            return response()->json(['error' => 'Cotización no encontrada'], 404);
+            return response()->json(['error' => self::NOT_FOUND], 404);
         }
 
         $cotizacion->id_cliente = $request->id_cliente;
         $cotizacion->id_contacto_cliente = $request->id_contacto_cliente;
-        $cotizacion->monto = number_format(floatval(preg_replace("/[^0-9.-]/", "", $request->monto)), 2, '.', '');
+        $cotizacion->monto = number_format(floatval(preg_replace(self::MONTO_PATTERN, "", $request->monto)), 2, '.', '');
         $cotizacion->tipo_pago = $request->tipo_pago;
         $cotizacion->nota_pago = $request->nota_pago;
         $cotizacion->nota_pedido = $request->nota_pedido;
@@ -125,7 +127,7 @@ class CotizacionController extends Controller
     {
         $cotizacion = Cotizacion::find($id);
         if (!$cotizacion) {
-            return response()->json(['error' => 'Cotización no encontrada'], 404);
+            return response()->json(['error' => self::NOT_FOUND], 404);
         }
 
         $cotizacion->delete();
@@ -135,8 +137,8 @@ class CotizacionController extends Controller
     public function producto(Request $request)
     {
         $datos = $request->except(['_token']);
-        $datos['precio_unitario'] = number_format(floatval(preg_replace("/[^0-9.-]/", "", $request->precio_unitario)), 4, '.', '');
-        $datos['total'] = number_format(floatval(preg_replace("/[^0-9.-]/", "", $request->total)), 2, '.', '');
+        $datos['precio_unitario'] = number_format(floatval(preg_replace(self::MONTO_PATTERN, "", $request->precio_unitario)), 4, '.', '');
+        $datos['total'] = number_format(floatval(preg_replace(self::MONTO_PATTERN, "", $request->total)), 2, '.', '');
 
         CotizacionProducto::insert($datos);
 
@@ -145,9 +147,9 @@ class CotizacionController extends Controller
 
     public function eliminarProducto($id)
     {
-        $producto = CotizacionProducto::findOrFail($id);
         CotizacionProducto::destroy($id);
 
         return response()->json(['message' => 'Producto eliminado con éxito'], 200);
     }
 }
+

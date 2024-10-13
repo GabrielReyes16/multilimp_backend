@@ -27,4 +27,6 @@ class Cotizacion extends Model
         'fecha_cotizacion',
         'fecha_entrega',
     ];
+        // Indicar el nombre de la tabla
+        protected $table = 'cotizaciones';
 }
