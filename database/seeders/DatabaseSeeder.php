@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             OpProductosSeeder::class,
             OrdenPedidosSeeder::class,
             //Seeders para cotizacion
+            CotizacionSeeder::class,
         ]);
     }
 }
