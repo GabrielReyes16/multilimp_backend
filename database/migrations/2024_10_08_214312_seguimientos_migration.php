@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('seguimientos', function (Blueprint $table) {
             $table->id();
             $table->date('fecha_emision')->nullable();
-            $table->string('oce_doc_path')->nullable(); // Ruta del archivo OCE
-            $table->string('ocf_doc_path')->nullable(); // Ruta del archivo OCF
+            $table->string('oce')->nullable(); // Ruta del archivo OCE
+            $table->string('ocf')->nullable(); // Ruta del archivo OCF
             $table->unsignedBigInteger('id_empresa')->nullable();
             $table->unsignedBigInteger('id_cliente')->nullable();
             $table->string('catalogo')->nullable();

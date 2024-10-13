@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Seguimiento;
-use App\Models\Empresa;
 use App\Models\Cliente;
-use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
+use App\Models\Empresa;
+use App\Models\Seguimiento;
+use Illuminate\Http\Request;
 
 class SeguimientosController extends Controller
 {
-    // Listar todos los seguimientos (GET)
+    // Constantes
+    private const NULLABLE_STRING_RULE = 'nullable|string';
+    private const FORMAT_DATE = 'nullable|date_format:Y-m-d';
+    private const NOT_FOUND_MSG = 'Seguimiento no encontrado';
+
+        // Listar todos los seguimientos (GET)
     public function index()
     {
         $seguimientos = Seguimiento::all();
@@ -25,7 +28,7 @@ class SeguimientosController extends Controller
         $seguimiento = Seguimiento::find($id);
 
         if (!$seguimiento) {
-            return response()->json(['message' => 'Seguimiento no encontrado'], 404);
+            return response()->json(['message' => self::NOT_FOUND_MSG], 404);
         }
 
         return response()->json($seguimiento, 200);
@@ -37,68 +40,46 @@ class SeguimientosController extends Controller
         try {
             // Valida los datos recibidos en el request
             $validatedData = $request->validate([
-                'fecha_emision' => 'nullable|date_format:Y-m-d',
-                'oce_file' => 'nullable|file|mimes:pdf',
-                'ocf_file' => 'nullable|file|mimes:pdf',
+                'fecha_emision' => self::FORMAT_DATE,
+                'oce' => 'nullable|file|mimes:pdf',
+                'ocf' => 'nullable|file|mimes:pdf',
                 'id_empresa' => 'required|integer|exists:empresas,id',
                 'id_cliente' => 'required|integer|exists:clientes,id',
-                'catalogo' => 'nullable|string',
-                'fecha_form' => 'nullable|date_format:Y-m-d',
-                'fecha_max_form' => 'nullable|date_format:Y-m-d',
-                'fecha_siaf' => 'nullable|date_format:Y-m-d',
+                'catalogo' => self::NULLABLE_STRING_RULE,
+                'fecha_form' => self::FORMAT_DATE,
+                'fecha_max_form' => self::FORMAT_DATE,
+                'fecha_siaf' => self::FORMAT_DATE,
                 'monto_venta' => 'nullable|numeric',
-                'cdireccion' => 'nullable|string',
-                'cdepartamento' => 'nullable|string',
-                'cprovincia' => 'nullable|string',
-                'cdistrito' => 'nullable|string',
-                'productos' => 'nullable|string',
-                'siaf' => 'nullable|string',
-                'etapa_siaf' => 'nullable|string',
-                'contacto_cliente' => 'nullable|string',
+                'cdireccion' => self::NULLABLE_STRING_RULE,
+                'cdepartamento' => self::NULLABLE_STRING_RULE,
+                'cprovincia' => self::NULLABLE_STRING_RULE,
+                'cdistrito' => self::NULLABLE_STRING_RULE,
+                'productos' => self::NULLABLE_STRING_RULE,
+                'siaf' => self::NULLABLE_STRING_RULE,
+                'etapa_siaf' => self::NULLABLE_STRING_RULE,
+                'contacto_cliente' => self::NULLABLE_STRING_RULE,
             ]);
 
-            // Verificación del contenido de Empresa y Cliente
-            $empresa = Empresa::find($request->id_empresa);
-            $cliente = Cliente::find($request->id_cliente);
+        // Verificar Empresa y Cliente
+        $empresa = Empresa::find($request->id_empresa);
+        $cliente = Cliente::find($request->id_cliente);
 
-            if (!$empresa || !$cliente) {
-                return response()->json(['message' => 'Empresa o Cliente no encontrado'], 404);
-            }
-
-            // Inicializar las rutas de los documentos
-            $validatedData['oce_doc_path'] = null;
-            $validatedData['ocf_doc_path'] = null;
-
+        if (!$empresa || !$cliente) {
+            $response = ['message' => 'Empresa o Cliente no encontrado'];
+            $statusCode = 404;
+        } else {
             // Manejo del archivo OCE
-            if ($request->hasFile('oce_file')) {
-                $nombreArchivoOce = $request->file('oce_file')->getClientOriginalName();
-                $oce_doc_path = $request->file('oce_file')->storeAs('docs', $nombreArchivoOce, 'public');
-                $validatedData['oce_doc_path'] = url("storage/docs/$nombreArchivoOce");
+            if ($request->hasFile('oce')) {
+                $nombreArchivoOce = $request->file('oce')->getClientOriginalName();
+                $oce_doc_path = $request->file('oce')->storeAs('docs', $nombreArchivoOce, 'public');
+                $validatedData['oce'] = $oce_doc_path; // Guardar la ruta en la base de datos
             }
 
             // Manejo del archivo OCF
-            if ($request->hasFile('ocf_file')) {
-                $nombreArchivoOcf = $request->file('ocf_file')->getClientOriginalName();
-                $ocf_doc_path = $request->file('ocf_file')->storeAs('docs', $nombreArchivoOcf, 'public');
-                $validatedData['ocf_doc_path'] = url("storage/docs/$nombreArchivoOcf");
-            }
-
-
-            // Convertir fechas al formato 'Y-m-d' para la base de datos
-            if (!empty($request->fecha_emision)) {
-                $validatedData['fecha_emision'] = Carbon::createFromFormat('d/m/Y', $request->fecha_emision)->format('Y-m-d');
-            }
-
-            if (!empty($request->fecha_form)) {
-                $validatedData['fecha_form'] = Carbon::createFromFormat('d/m/Y', $request->fecha_form)->format('Y-m-d');
-            }
-
-            if (!empty($request->fecha_max_form)) {
-                $validatedData['fecha_max_form'] = Carbon::createFromFormat('d/m/Y', $request->fecha_max_form)->format('Y-m-d');
-            }
-
-            if (!empty($request->fecha_siaf)) {
-                $validatedData['fecha_siaf'] = Carbon::createFromFormat('d/m/Y', $request->fecha_siaf)->format('Y-m-d');
+            if ($request->hasFile('ocf')) {
+                $nombreArchivoOcf = $request->file('ocf')->getClientOriginalName();
+                $ocf_doc_path = $request->file('ocf')->storeAs('docs', $nombreArchivoOcf, 'public');
+                $validatedData['ocf'] = $ocf_doc_path; // Guardar la ruta en la base de datos
             }
 
             // Formato del monto de venta
@@ -113,28 +94,28 @@ class SeguimientosController extends Controller
             // Crear el nuevo seguimiento
             $seguimiento = Seguimiento::create($validatedData);
 
-            return response()->json([
+            $response = [
                 'message' => 'Seguimiento registrado correctamente.',
                 'data' => $seguimiento,
-                'empresa_info' => $empresa->only(['id', 'razon_social', 'ruc']),
-                'cliente_info' => $cliente->only(['id', 'razon_social', 'ruc']),
-            ], 201);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Errores de validacion',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error interno del servidor',
-                'error' => $e->getMessage()
-            ], 500);
+            ];
+            $statusCode = 201;
         }
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        $response = [
+            'message' => 'Errores de validacion',
+            'errors' => $e->errors(),
+        ];
+        $statusCode = 422;
+    } catch (\Exception $e) {
+        $response = [
+            'message' => 'Error interno del servidor',
+            'error' => $e->getMessage(),
+        ];
+        $statusCode = 500;
     }
 
-
-
+    return response()->json($response, $statusCode);
+}
 
     // Actualizar un seguimiento (PUT/PATCH)
     public function update(Request $request, $id)
@@ -142,7 +123,7 @@ class SeguimientosController extends Controller
         $seguimiento = Seguimiento::find($id);
 
         if (!$seguimiento) {
-            return response()->json(['message' => 'Seguimiento no encontrado'], 404);
+            return response()->json(['message' => self::NOT_FOUND_MSG], 404);
         }
 
         // Validar los datos que vienen en la petición
@@ -159,7 +140,7 @@ class SeguimientosController extends Controller
 
         return response()->json([
             'message' => 'Seguimiento actualizado exitosamente',
-            'seguimiento' => $seguimiento
+            'seguimiento' => $seguimiento,
         ], 200);
     }
 
@@ -176,7 +157,7 @@ class SeguimientosController extends Controller
         $seguimiento->delete();
 
         return response()->json([
-            'message' => 'Seguimiento eliminado exitosamente'
+            'message' => 'Seguimiento eliminado exitosamente',
         ], 200);
     }
 }
