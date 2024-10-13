@@ -62,3 +62,6 @@ Route::apiResource('op_producto', OpProductoController::class);
 
 //OrdenPedidos
 Route::apiResource('orden_pedido', OrdenPedidoController::class);
+
+//SeguimientoOp
+Route::apiResource('seguimientos_op', SeguimientosController::class);
