@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\ContactoTransportesController;
 use App\Http\Controllers\Api\OpProductoController;
 use App\Http\Controllers\Api\OrdenPedidoController;
 
+//Proceso Cotizacion
+use App\Controllers\Api\CotizacionController;
 
 //Empresas
 Route::apiResource('empresas', EmpresasController::class);
@@ -65,3 +67,7 @@ Route::apiResource('orden_pedido', OrdenPedidoController::class);
 
 //SeguimientoOp
 Route::apiResource('seguimientos_op', SeguimientosController::class);
+
+
+//PROCESO COTIZAZCION
+Route::apiResource('cotizacion', CotizacionController::class);
