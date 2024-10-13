@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\Empresa;
 use App\Models\Seguimiento;
+use App\Models\Contra;
+use App\Models\ContactoCliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SeguimientosController extends Controller
 {
@@ -23,17 +26,6 @@ class SeguimientosController extends Controller
         return response()->json($seguimientos, 200);
     }
 
-    // Mostrar un seguimiento específico (GET)
-    public function show($id)
-    {
-        $seguimiento = Seguimiento::find($id);
-
-        if (!$seguimiento) {
-            return response()->json(['message' => self::NOT_FOUND_MSG], 404);
-        }
-
-        return response()->json($seguimiento, 200);
-    }
 
     // Crear un nuevo seguimiento (POST)
     public function store(Request $request)
@@ -137,32 +129,98 @@ class SeguimientosController extends Controller
         return response()->json($response, $statusCode);
     }
 
+    public function show($id)
+{
+    try {
+        // Obtener la contraseña (por ejemplo, para validar acceso)
+        $contra = Contra::find(1);
+
+        // Obtener el seguimiento específico, lanzar error 404 si no se encuentra
+        $seguimiento = Seguimiento::findOrFail($id);
+
+        // Obtener los clientes cuyo estado no sea 1 o que tengan estado nulo
+        $clientes = Cliente::where('estado', '<>', 1)->orWhereNull('estado')->get();
+
+        // Obtener las empresas cuyo estado no sea 1 o que tengan estado nulo
+        $empresas = Empresa::where('estado', '<>', 1)->orWhereNull('estado')->get();
+
+        // Obtener los contactos del cliente asociado al seguimiento
+        $contactos = ContactoCliente::where('id_cliente', '=', $seguimiento->id_cliente)->get();
+
+        // Retornar los datos en formato JSON con código 200 (OK)
+        return response()->json([
+            'contra' => $contra,
+            'seguimiento' => $seguimiento,
+            'clientes' => $clientes,
+            'empresas' => $empresas,
+            'contactos' => $contactos
+        ], 200);
+
+    } catch (ModelNotFoundException $e) {
+        // Si no se encuentra el seguimiento, retornar mensaje de error con código 404 (No encontrado)
+        return response()->json(['message' => 'Seguimiento no encontrado'], 404);
+    } catch (\Exception $e) {
+        // Retornar mensaje genérico de error si ocurre algún otro problema con código 500 (Error interno)
+        return response()->json(['message' => 'Error interno del servidor', 'error' => $e->getMessage()], 500);
+    }
+}
+
     // Actualizar un seguimiento (PUT/PATCH)
     public function update(Request $request, $id)
     {
-        $seguimiento = Seguimiento::find($id);
+        $response = []; // Variable para almacenar la respuesta
+        $statusCode = 200; // Código de estado predeterminado
 
-        if (!$seguimiento) {
-            return response()->json(['message' => self::NOT_FOUND_MSG], 404);
+        try {
+            // Verificar si el seguimiento existe
+            $seguimiento = Seguimiento::find($id);
+
+            if (!$seguimiento) {
+                $response = ['message' => self::NOT_FOUND_MSG];
+                $statusCode = 404;
+                throw new \Exception('Seguimiento no encontrado', 404); // Lanza una excepción para manejarlo en el catch
+            }
+
+            // Mostrar lo que está trayendo el request (para propósitos de depuración)
+            \Log::info('Datos recibidos en la actualización:', $request->all());
+
+            // Validar los datos que vienen en la petición
+            $validatedData = $request->validate([
+                'id_empresa' => 'required|integer|exists:empresas,id',
+                'id_cliente' => 'required|integer|exists:clientes,id',
+                'catalogo' => self::NULLABLE_STRING_RULE,
+                'monto_venta' => 'required|numeric',
+                'fecha_emision' => self::FORMAT_DATE,
+            ]);
+
+            // Actualizar el seguimiento con los datos validados
+            $seguimiento->update($validatedData);
+
+            $response = [
+                'message' => 'Seguimiento actualizado exitosamente',
+                'seguimiento' => $seguimiento,
+            ];
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Capturar errores de validación
+            $response = [
+                'message' => 'Errores de validación',
+                'errors' => $e->errors(),
+            ];
+            $statusCode = 422;
+        } catch (\Exception $e) {
+            // Capturar cualquier otro tipo de error o excepción
+            \Log::error('Error en la actualización del seguimiento: ' . $e->getMessage());
+            $response = [
+                'message' => 'Error interno del servidor',
+                'error' => $e->getMessage(),
+            ];
+            $statusCode = 500;
         }
 
-        // Validar los datos que vienen en la petición
-        $validatedData = $request->validate([
-            'id_empresa' => 'required|exists:empresas,id',
-            'id_cliente' => 'required|exists:clientes,id',
-            'catalogo' => 'required|string',
-            'monto_venta' => 'required|numeric',
-            'fecha_emision' => 'required|date_format:d/m/Y',
-        ]);
-
-        // Actualizar el seguimiento
-        $seguimiento->update($validatedData);
-
-        return response()->json([
-            'message' => 'Seguimiento actualizado exitosamente',
-            'seguimiento' => $seguimiento,
-        ], 200);
+        return response()->json($response, $statusCode); // Retornar respuesta al final
     }
+
 
     // Eliminar un seguimiento (DELETE)
     public function destroy($id)
