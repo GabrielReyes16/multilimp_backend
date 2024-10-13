@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\Empresa;
 use App\Models\Seguimiento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SeguimientosController extends Controller
 {
@@ -15,7 +16,7 @@ class SeguimientosController extends Controller
     private const FORMAT_DATE = 'nullable|date_format:Y-m-d';
     private const NOT_FOUND_MSG = 'Seguimiento no encontrado';
 
-        // Listar todos los seguimientos (GET)
+    // Listar todos los seguimientos (GET)
     public function index()
     {
         $seguimientos = Seguimiento::all();
@@ -60,62 +61,81 @@ class SeguimientosController extends Controller
                 'contacto_cliente' => self::NULLABLE_STRING_RULE,
             ]);
 
-        // Verificar Empresa y Cliente
-        $empresa = Empresa::find($request->id_empresa);
-        $cliente = Cliente::find($request->id_cliente);
+            // Verificar Empresa y Cliente
+            $empresa = Empresa::find($request->id_empresa);
+            $cliente = Cliente::find($request->id_cliente);
 
-        if (!$empresa || !$cliente) {
-            $response = ['message' => 'Empresa o Cliente no encontrado'];
-            $statusCode = 404;
-        } else {
-            // Manejo del archivo OCE
-            if ($request->hasFile('oce')) {
-                $nombreArchivoOce = $request->file('oce')->getClientOriginalName();
-                $oce_doc_path = $request->file('oce')->storeAs('docs', $nombreArchivoOce, 'public');
-                $validatedData['oce'] = $oce_doc_path; // Guardar la ruta en la base de datos
+            if (!$empresa || !$cliente) {
+                $response = ['message' => 'Empresa o Cliente no encontrado'];
+                $statusCode = 404;
+            } else {
+// Manejo del archivo OCE
+                if ($request->hasFile('oce')) {
+                    $nombreArchivoOce = $request->file('oce')->getClientOriginalName();
+                    $oce_doc_path = 'docs/' . $nombreArchivoOce;
+
+                    // Verificar si el archivo ya existe
+                    if (Storage::disk('public')->exists($oce_doc_path)) {
+                        return response()->json([
+                            'message' => 'El archivo OCE ya existe en el sistema.',
+                        ], 422);
+                    }
+
+                    // Guardar el archivo si no existe
+                    $request->file('oce')->storeAs('docs', $nombreArchivoOce, 'public');
+                    $validatedData['oce'] = $oce_doc_path; // Guardar la ruta en la base de datos
+                }
+
+// Manejo del archivo OCF
+                if ($request->hasFile('ocf')) {
+                    $nombreArchivoOcf = $request->file('ocf')->getClientOriginalName();
+                    $ocf_doc_path = 'docs/' . $nombreArchivoOcf;
+
+                    // Verificar si el archivo ya existe
+                    if (Storage::disk('public')->exists($ocf_doc_path)) {
+                        return response()->json([
+                            'message' => 'El archivo OCF ya existe en el sistema.',
+                        ], 422);
+                    }
+
+                    // Guardar el archivo si no existe
+                    $request->file('ocf')->storeAs('docs', $nombreArchivoOcf, 'public');
+                    $validatedData['ocf'] = $ocf_doc_path; // Guardar la ruta en la base de datos
+                }
+
+                // Formato del monto de venta
+                if (!empty($request->monto_venta)) {
+                    $validatedData['monto_venta'] = number_format(floatval(preg_replace("/[^0-9.-]/", "", $request->monto_venta)), 2, '.', '');
+                }
+
+                // Generar el código de venta
+                $conteo = Seguimiento::where('id_empresa', $request->id_empresa)->count();
+                $validatedData['id_venta'] = strtoupper('OC-' . substr($empresa->razon_social, 0, 3)) . '-' . ($conteo + 1);
+
+                // Crear el nuevo seguimiento
+                $seguimiento = Seguimiento::create($validatedData);
+
+                $response = [
+                    'message' => 'Seguimiento registrado correctamente.',
+                    'data' => $seguimiento,
+                ];
+                $statusCode = 201;
             }
-
-            // Manejo del archivo OCF
-            if ($request->hasFile('ocf')) {
-                $nombreArchivoOcf = $request->file('ocf')->getClientOriginalName();
-                $ocf_doc_path = $request->file('ocf')->storeAs('docs', $nombreArchivoOcf, 'public');
-                $validatedData['ocf'] = $ocf_doc_path; // Guardar la ruta en la base de datos
-            }
-
-            // Formato del monto de venta
-            if (!empty($request->monto_venta)) {
-                $validatedData['monto_venta'] = number_format(floatval(preg_replace("/[^0-9.-]/", "", $request->monto_venta)), 2, '.', '');
-            }
-
-            // Generar el código de venta
-            $conteo = Seguimiento::where('id_empresa', $request->id_empresa)->count();
-            $validatedData['id_venta'] = strtoupper('OC-' . substr($empresa->razon_social, 0, 3)) . '-' . ($conteo + 1);
-
-            // Crear el nuevo seguimiento
-            $seguimiento = Seguimiento::create($validatedData);
-
+        } catch (\Illuminate\Validation\ValidationException $e) {
             $response = [
-                'message' => 'Seguimiento registrado correctamente.',
-                'data' => $seguimiento,
+                'message' => 'Errores de validacion',
+                'errors' => $e->errors(),
             ];
-            $statusCode = 201;
+            $statusCode = 422;
+        } catch (\Exception $e) {
+            $response = [
+                'message' => 'Error interno del servidor',
+                'error' => $e->getMessage(),
+            ];
+            $statusCode = 500;
         }
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        $response = [
-            'message' => 'Errores de validacion',
-            'errors' => $e->errors(),
-        ];
-        $statusCode = 422;
-    } catch (\Exception $e) {
-        $response = [
-            'message' => 'Error interno del servidor',
-            'error' => $e->getMessage(),
-        ];
-        $statusCode = 500;
+        return response()->json($response, $statusCode);
     }
-
-    return response()->json($response, $statusCode);
-}
 
     // Actualizar un seguimiento (PUT/PATCH)
     public function update(Request $request, $id)
