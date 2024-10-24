@@ -2,37 +2,49 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, Notifiable;
 
-    /**
-     * Los atributos que se pueden asignar masivamente.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'email_verified_at',
         'password',
         'remember_token',
         'nombre',
         'apellido',
-        'role_id',  // En lugar de 'rol' como string, usamos un foreign key
         'foto',
         'tabla',
     ];
 
-    /**
-     * Relación con el modelo `Role`.
-     * Un usuario pertenece a un rol.
-     */
-    public function role()
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    // Función para verificar si el usuario es administrador
+    public function isAdmin()
     {
-        return $this->belongsTo(Role::class);
+        return $this->rol === 'admin';
+    }
+
+    // Relación con permisosProcesos y permisosConfiguracion
+    public function permisosProcesos()
+    {
+        return $this->belongsToMany(PermisoProceso::class, 'user_permiso_proceso');
+    }
+
+    public function permisosConfiguracion()
+    {
+        return $this->belongsToMany(PermisoConfiguracion::class, 'user_permiso_configuracion');
     }
 }

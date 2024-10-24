@@ -14,8 +14,6 @@ class DatabaseSeeder extends Seeder
         // Llamamos a los seeders que quieres ejecutar
         $this->call([
             //seeders iniciales
-            RoleSeeder::class,
-            UserSeeder::class,
             ClienteSeeder::class,
             EmpresaSeeder::class,
             ProveedorSeeder::class,
@@ -33,6 +31,10 @@ class DatabaseSeeder extends Seeder
             //Seeders para cotizacion
             CotizacionSeeder::class,
             CotizacionProductosSeeder::class,
+
+            //Users
+            PermisosConfiguracionSeeder::class,
+            PermisosProcesosSeeder::class,
         ]);
     }
 }

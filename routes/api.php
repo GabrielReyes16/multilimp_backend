@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 
 use App\Http\Controllers\Api\EmpresasController;
 use App\Http\Controllers\Api\ClientesController;
@@ -21,6 +22,9 @@ use App\Http\Controllers\Api\OrdenPedidoController;
 //Proceso Cotizacion
 use App\Http\Controllers\Api\CotizacionController;
 use App\Http\Controllers\Api\CotizacionProductosController;
+
+
+
 
 //Empresas
 Route::apiResource('empresas', EmpresasController::class);

@@ -2,66 +2,80 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Models\PermisoConfiguracion;
+use App\Models\PermisoProceso;
 
 class UsersController extends Controller
 {
-    // Obtener todos los usuarios
+
     public function index()
     {
-        return User::with('role')->get(); // Incluir la relación de roles
+        // Obtener todos los usuarios con sus permisos
+        $users = User::with(['permisosProcesos:id,nombre', 'permisosConfiguracion:id,nombre'])->get();
+
+        // Transformar la colección para incluir solo los campos necesarios
+        $users = $users->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'nombre' => $user->nombre,
+                'apellido' => $user->apellido,
+                'foto' => $user->foto,
+                'rol' => $user->rol,
+                'permisosProcesos' => $user->permisosProcesos->map(function ($permiso) {
+                    return [
+                        'id' => $permiso->id,
+                        'nombre' => $permiso->nombre,
+                    ];
+                }),
+                'permisosConfiguracion' => $user->permisosConfiguracion->map(function ($permiso) {
+                    return [
+                        'id' => $permiso->id,
+                        'nombre' => $permiso->nombre,
+                    ];
+                }),
+            ];
+        });
+
+        // Retornar la respuesta en formato JSON
+        return response()->json($users);
     }
 
-    // Crear un nuevo usuario
+
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role_id' => 'nullable|exists:roles,id',
-            'nombre' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'foto' => 'nullable|string',
-            'tabla' => 'nullable|string',
+        // Validación del request
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'foto' => $request->fotoPerfil,
+            'rol' => $request->rol,
         ]);
 
-        $user = User::create($request->all());
-        return response()->json($user, 201);
-    }
+        // Asignación de permisos de procesos
+        $permisosProcesosIds = PermisoProceso::whereIn('nombre', $request->permisosProcesos)->pluck('id');
 
-    // Obtener un usuario específico
-    public function show($id)
-    {
-        return User::with('role')->findOrFail($id); // Incluir la relación de roles
-    }
+        $user->permisosProcesos()->sync($permisosProcesosIds); // Asegúrate de que sean IDs
 
-    // Actualizar un usuario existente
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|string|email|max:255|unique:users,email,'.$id,
-            'password' => 'nullable|string|min:8',
-            'role_id' => 'nullable|exists:roles,id',
-            'nombre' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'foto' => 'nullable|string',
-            'tabla' => 'nullable|string',
+        // Asignación de permisos de configuración
+        $permisosConfiguracionIds = PermisoConfiguracion::whereIn('nombre', $request->permisosConfiguracion)->pluck('id');
+
+
+        $user->permisosConfiguracion()->sync($permisosConfiguracionIds); // Asegúrate de que sean IDs
+
+        // Cargar los permisos para la respuesta
+        $user->load(['permisosProcesos:id,nombre', 'permisosConfiguracion:id,nombre']);
+
+        // Devolver la respuesta JSON con los permisos otorgados
+        return response()->json([
+            'user' => $user,
         ]);
-
-        $user = User::findOrFail($id);
-        $user->update($request->all());
-        return response()->json($user, 200);
-    }
-
-    // Eliminar un usuario
-    public function destroy($id)
-    {
-        $user = User::findOrFail($id);
-        $user->delete();
-        return response()->json(null, 204);
     }
 }
