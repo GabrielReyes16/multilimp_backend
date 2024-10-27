@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ClientesController;
 use App\Http\Controllers\Api\TransportesController;
 use App\Http\Controllers\Api\ProveedoresController;
 use App\Http\Controllers\Api\UsersController;
+use App\Http\Controllers\Api\UserPermissionController;
 use App\Http\Controllers\Api\RolesController;
 //Proceso ventas
 use App\Http\Controllers\Api\ContrasController;
@@ -40,6 +41,10 @@ Route::apiResource('proveedores', ProveedoresController::class);
 
 //Users
 Route::apiResource('users', UsersController::class);
+
+Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
+
+
 
 //Roles
 Route::apiResource('roles', RolesController::class);
