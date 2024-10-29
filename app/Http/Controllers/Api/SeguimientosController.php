@@ -18,6 +18,9 @@ class SeguimientosController extends Controller
     private const NULLABLE_STRING_RULE = 'nullable|string';
     private const FORMAT_DATE = 'nullable|date_format:Y-m-d';
     private const NOT_FOUND_MSG = 'Seguimiento no encontrado';
+    private const INTERNAL_SERVER_ERROR = 'Error interno del servidor';
+    private const NULLABLE_FILE_PDF = 'nullable|file|mimes:pdf';
+    private const DOCS = 'docs/';
 
     // Listar todos los seguimientos (GET)
     public function index()
@@ -33,8 +36,8 @@ class SeguimientosController extends Controller
             // Valida los datos recibidos en el request
             $validatedData = $request->validate([
                 'fecha_emision' => self::FORMAT_DATE,
-                'oce' => 'nullable|file|mimes:pdf',
-                'ocf' => 'nullable|file|mimes:pdf',
+                'oce' => self::NULLABLE_FILE_PDF,
+                'ocf' => self::NULLABLE_FILE_PDF,
                 'id_empresa' => 'required|integer|exists:empresas,id',
                 'id_cliente' => 'required|integer|exists:clientes,id',
                 'catalogo' => self::NULLABLE_STRING_RULE,
@@ -63,7 +66,7 @@ class SeguimientosController extends Controller
 // Manejo del archivo OCE
                 if ($request->hasFile('oce')) {
                     $nombreArchivoOce = $request->file('oce')->getClientOriginalName();
-                    $oce_doc_path = 'docs/' . $nombreArchivoOce;
+                    $oce_doc_path = self::DOCS . $nombreArchivoOce;
 
                     // Verificar si el archivo ya existe
                     if (Storage::disk('public')->exists($oce_doc_path)) {
@@ -80,7 +83,7 @@ class SeguimientosController extends Controller
 // Manejo del archivo OCF
                 if ($request->hasFile('ocf')) {
                     $nombreArchivoOcf = $request->file('ocf')->getClientOriginalName();
-                    $ocf_doc_path = 'docs/' . $nombreArchivoOcf;
+                    $ocf_doc_path = self::DOCS . $nombreArchivoOcf;
 
                     // Verificar si el archivo ya existe
                     if (Storage::disk('public')->exists($ocf_doc_path)) {
@@ -120,7 +123,7 @@ class SeguimientosController extends Controller
             $statusCode = 422;
         } catch (\Exception $e) {
             $response = [
-                'message' => 'Error interno del servidor',
+                'message' => self::INTERNAL_SERVER_ERROR,
                 'error' => $e->getMessage(),
             ];
             $statusCode = 500;
@@ -157,10 +160,10 @@ class SeguimientosController extends Controller
 
         } catch (ModelNotFoundException $e) {
             // Si no se encuentra el seguimiento, retornar mensaje de error con código 404 (No encontrado)
-            return response()->json(['message' => 'Seguimiento no encontrado'], 404);
+            return response()->json(['message' => self::NOT_FOUND_MSG], 404);
         } catch (\Exception $e) {
             // Retornar mensaje genérico de error si ocurre algún otro problema con código 500 (Error interno)
-            return response()->json(['message' => 'Error interno del servidor', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => self::INTERNAL_SERVER_ERROR, 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -173,14 +176,14 @@ class SeguimientosController extends Controller
             // Verificar si el seguimiento existe primero
             $seguimiento = Seguimiento::find($id);
             if (!$seguimiento) {
-                return response()->json(['message' => 'Seguimiento no encontrado'], 404); // Respuesta si no se encuentra
+                return response()->json(['message' => self::NOT_FOUND_MSG], 404); // Respuesta si no se encuentra
             }
 
             // Validar los datos recibidos en el request
             $validatedData = $request->validate([
                 'fecha_emision' => self::FORMAT_DATE,
-                'oce' => 'nullable|file|mimes:pdf',
-                'ocf' => 'nullable|file|mimes:pdf',
+                'oce' => self::NULLABLE_FILE_PDF,
+                'ocf' => self::NULLABLE_FILE_PDF,
                 'id_empresa' => 'required|integer|exists:empresas,id',
                 'id_cliente' => 'required|integer|exists:clientes,id',
                 'catalogo' => self::NULLABLE_STRING_RULE,
@@ -201,7 +204,7 @@ class SeguimientosController extends Controller
             // Manejo del archivo OCE
             if ($request->hasFile('oce')) {
                 $nombreArchivoOce = $request->file('oce')->getClientOriginalName();
-                $oce_doc_path = 'docs/' . $nombreArchivoOce;
+                $oce_doc_path = self::DOCS . $nombreArchivoOce;
 
                 // Verificar si el archivo ya existe
                 if (Storage::disk('public')->exists($oce_doc_path)) {
@@ -221,7 +224,7 @@ class SeguimientosController extends Controller
             // Manejo del archivo OCF
             if ($request->hasFile('ocf')) {
                 $nombreArchivoOcf = $request->file('ocf')->getClientOriginalName();
-                $ocf_doc_path = 'docs/' . $nombreArchivoOcf;
+                $ocf_doc_path = self::DOCS . $nombreArchivoOcf;
 
                 // Verificar si el archivo ya existe
                 if (Storage::disk('public')->exists($ocf_doc_path)) {
@@ -256,7 +259,7 @@ class SeguimientosController extends Controller
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error interno del servidor',
+                'message' => self::INTERNAL_SERVER_ERROR,
                 'error' => $e->getMessage(),
             ], 500);
         }

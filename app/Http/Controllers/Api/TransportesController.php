@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class TransportesController extends Controller
 {
     //Constantes
-    private const NULLABLE_STRING_255 =self::NULLABLE_STRING_255;
+    private const NULLABLE_STRING_255 ='nullable|string|max:255';
     /**
      * Display a listing of the resource.
      */

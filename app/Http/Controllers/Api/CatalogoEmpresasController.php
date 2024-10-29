@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class CatalogoEmpresasController extends Controller
 {
+    //Constantes
+    private const NOT_FOUND = self::STRING_255;
     // Obtener todos los registros de catalogo_empresas
     public function index()
     {
@@ -21,7 +23,7 @@ class CatalogoEmpresasController extends Controller
         $catalogo = CatalogoEmpresa::find($id);
 
         if (!$catalogo) {
-            return response()->json(['message' => 'CatalogoEmpresa no encontrado'], 404);
+            return response()->json(['message' =>self::NOT_FOUND], 404);
         }
 
         return response()->json($catalogo, 200);
@@ -46,7 +48,7 @@ class CatalogoEmpresasController extends Controller
         $catalogo = CatalogoEmpresa::find($id);
 
         if (!$catalogo) {
-            return response()->json(['message' => 'CatalogoEmpresa no encontrado'], 404);
+            return response()->json(['message' => self::NOT_FOUND], 404);
         }
 
         $validatedData = $request->validate([
@@ -65,7 +67,7 @@ class CatalogoEmpresasController extends Controller
         $catalogo = CatalogoEmpresa::find($id);
 
         if (!$catalogo) {
-            return response()->json(['message' => 'CatalogoEmpresa no encontrado'], 404);
+            return response()->json(['message' => self::NOT_FOUND], 404);
         }
 
         $catalogo->delete();

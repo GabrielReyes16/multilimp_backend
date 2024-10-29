@@ -13,9 +13,8 @@ use App\Models\PermisoProceso;
 class UsersController extends Controller
 {
     private const PROCESS_ID_NAME = 'permisosProcesos:id,nombre'; //Traer el ID y el nombre de los permisos de procesos
-    private const CONFIG_ID_NAME = 'permisosConfiguracion:id,nombre'; //Traer el IDy el nombbre de los permisos de las configuraciones
-    private const STRING_NULL = 'string|nullable'; //Permite strings nulos
-
+    private const CONFIG_ID_NAME = 'permisosConfiguracion:id,nombre';
+    private const NULLABLE_STRING_255 ='required|string|max:255';
     public function index()
     {
         // Obtener todos los usuarios con sus permisos
@@ -127,7 +126,7 @@ class UsersController extends Controller
 
         // Verificar si el usuario existe
         if (!$user) {
-            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => 'User not found'], 404);
         }
 
         // Validar los datos del request (solo los campos del usuario)
@@ -135,9 +134,9 @@ class UsersController extends Controller
             'username' => 'string|unique:users,username,' . $user->id,
             'email' => 'string|email|unique:users,email,' . $user->id,
             'password' => 'string|nullable|min:6',
-            'nombre' => 'nullable|string|max:255',
-            'apellido' => 'nullable|string|max:255',
-            'foto' => 'nullable|string|max:255',
+            'nombre' => self::NULLABLE_STRING_255,
+            'apellido' => self::NULLABLE_STRING_255,
+            'foto' => self::NULLABLE_STRING_255,
             'rol' => 'in:admin,user',
         ]);
 
@@ -163,6 +162,6 @@ class UsersController extends Controller
             'rol' => $user->rol,
         ];
 
-        return response()->json($userData, Response::HTTP_OK);
+        return response()->json($userData, 200);
     }
 }

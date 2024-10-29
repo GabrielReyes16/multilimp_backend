@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class ContrasController extends Controller
 {
+    //Constantes
+    private const NOT_FOUND = self::STRING_255;
     // Listar todas las contras
     public function index()
     {
@@ -19,7 +21,7 @@ class ContrasController extends Controller
     {
         $contra = Contra::find($id);
         if (!$contra) {
-            return response()->json(['message' => 'Contra no encontrada'], 404);
+            return response()->json(['message' => self::NOT_FOUND], 404);
         }
         return response()->json($contra);
     }
@@ -40,7 +42,7 @@ class ContrasController extends Controller
     {
         $contra = Contra::find($id);
         if (!$contra) {
-            return response()->json(['message' => 'Contra no encontrada'], 404);
+            return response()->json(['message' =>  self::NOT_FOUND], 404);
         }
 
         $validatedData = $request->validate([
@@ -56,7 +58,7 @@ class ContrasController extends Controller
     {
         $contra = Contra::find($id);
         if (!$contra) {
-            return response()->json(['message' => 'Contra no encontrada'], 404);
+            return response()->json(['message' =>  self::NOT_FOUND], 404);
         }
 
         $contra->delete();

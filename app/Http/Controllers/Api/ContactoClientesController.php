@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 
 class ContactoClientesController extends Controller
 {
-    // Obtener todos los registros de contacto_clientes
+    //Constantes
+    private const REQ_STRING_255 = 'required|string|max:255';
+    private const STRING_255 = 'string|max:255';
     public function index()
     {
         $contactos = ContactoCliente::all();
@@ -21,7 +23,7 @@ class ContactoClientesController extends Controller
         $contacto = ContactoCliente::find($id);
 
         if (!$contacto) {
-            return response()->json(['message' => 'ContactoCliente no encontrado'], 404);
+            return response()->json(['message' => 'Contacto de Cliente no encontrado'], 404);
         }
 
         return response()->json($contacto, 200);
@@ -31,11 +33,11 @@ class ContactoClientesController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'telefono' => 'required|string|max:255',
+            'nombre' => self::REQ_STRING_255,
+            'telefono' => self::REQ_STRING_255,
             'correo' => 'required|string|email|max:255',
-            'cargo' => 'required|string|max:255',
-            'id_cliente' => 'required|string|max:255',
+            'cargo' => self::REQ_STRING_255,
+            'id_cliente' => self::REQ_STRING_255,
             'estado' => 'nullable|integer',
         ]);
 
@@ -54,11 +56,11 @@ class ContactoClientesController extends Controller
         }
 
         $validatedData = $request->validate([
-            'nombre' => 'string|max:255',
-            'telefono' => 'string|max:255',
+            'nombre' => self::STRING_255,
+            'telefono' => self::STRING_255,
             'correo' => 'string|email|max:255',
-            'cargo' => 'string|max:255',
-            'id_cliente' => 'string|max:255',
+            'cargo' => self::STRING_255,
+            'id_cliente' => self::STRING_255,
             'estado' => 'nullable|integer',
         ]);
 
