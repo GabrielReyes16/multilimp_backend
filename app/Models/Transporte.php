@@ -28,4 +28,9 @@ class Transporte extends Model
     ];
 
     public $timestamps = true;
+
+    public function contactos()
+    {
+        return $this->hasMany(ContactoTransporte::class, 'id_transporte');
+    }
 }

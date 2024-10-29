@@ -16,11 +16,16 @@ class ContactoTransporte extends Model
         'telefono',
         'correo',
         'cargo',
-        'id_cliente',
+        'id_transporte',
         'estado',
         'created_at',
         'updated_at',
     ];
 
     public $timestamps = true; // Activar timestamps si se usa 'created_at' y 'updated_at'
+
+    protected $hidden =[
+        'id_transporte'
+    ];
+
 }

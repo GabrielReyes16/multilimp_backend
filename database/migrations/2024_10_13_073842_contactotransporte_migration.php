@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('telefono')->nullable();
             $table->string('correo')->nullable();
             $table->string('cargo')->nullable();
-            $table->string('id_cliente')->nullable();
+            $table->string('id_transporte')->nullable();
             $table->integer('estado')->nullable();
             $table->timestamps(); // Para 'created_at' y 'updated_at'
         });

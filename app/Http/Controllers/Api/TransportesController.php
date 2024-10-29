@@ -8,12 +8,15 @@ use Illuminate\Http\Request;
 
 class TransportesController extends Controller
 {
+    //Constantes
+    private const NULLABLE_STRING_255 =self::NULLABLE_STRING_255;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Transporte::all(); // Retorna todos los transportes
+        $transportes = Transporte::with('contactos')->get();
+        return response()->json($transportes);
     }
 
     /**
@@ -24,10 +27,10 @@ class TransportesController extends Controller
         $request->validate([
             'ruc' => 'required|string|max:255',
             'razon_social' => 'required|string|max:255',
-            'departamento' => 'nullable|string|max:255',
-            'provincia' => 'nullable|string|max:255',
-            'distrito' => 'nullable|string|max:255',
-            'direccion' => 'nullable|string|max:255',
+            'departamento' => self::NULLABLE_STRING_255,
+            'provincia' => self::NULLABLE_STRING_255,
+            'distrito' => self::NULLABLE_STRING_255,
+            'direccion' => self::NULLABLE_STRING_255,
             'cobertura' => 'nullable|string|max:1000',
             'estado' => 'nullable|integer',
         ]);
@@ -39,9 +42,14 @@ class TransportesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Transporte $transporte)
+    public function show($id)
     {
-        return $transporte; // Retorna el transporte solicitado
+        $transporte = Transporte::with('contactos') -> find($id);
+
+        if(!$transporte){
+            return response()->json(['message' => 'Transporte no encontrado'], 404);
+        }
+        return response() -> json($transporte, 201);
     }
 
     /**
@@ -52,10 +60,10 @@ class TransportesController extends Controller
         $request->validate([
             'ruc' => 'sometimes|required|string|max:255',
             'razon_social' => 'sometimes|required|string|max:255',
-            'departamento' => 'nullable|string|max:255',
-            'provincia' => 'nullable|string|max:255',
-            'distrito' => 'nullable|string|max:255',
-            'direccion' => 'nullable|string|max:255',
+            'departamento' => self::NULLABLE_STRING_255,
+            'provincia' => self::NULLABLE_STRING_255,
+            'distrito' => self::NULLABLE_STRING_255,
+            'direccion' => self::NULLABLE_STRING_255,
             'cobertura' => 'nullable|string|max:1000',
             'estado' => 'nullable|integer',
         ]);
