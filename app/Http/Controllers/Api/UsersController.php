@@ -50,7 +50,6 @@ class UsersController extends Controller
         return response()->json($users);
     }
 
-
     public function store(Request $request)
     {
         // Validación del request
