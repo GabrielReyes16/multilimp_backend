@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('telefono')->nullable();
             $table->string('correo')->nullable();
             $table->string('cargo')->nullable();
-            $table->unsignedBigInteger('id_cliente')->nullable(); // Cambiado a unsignedBigInteger
+            $table->unsignedBigInteger('id_proveedor')->nullable(); // Cambiado a unsignedBigInteger
             $table->integer('estado')->nullable();
             $table->timestamps();
 

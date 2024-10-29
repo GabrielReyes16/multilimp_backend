@@ -28,4 +28,9 @@ class Proveedor extends Model
     ];
 
     public $timestamps = true;
+
+    public function contactos()
+    {
+        return $this -> hasMany(ContactoProveedor::class, 'id_proveedor');
+    }
 }

@@ -8,10 +8,13 @@ use Illuminate\Http\Request;
 
 class ProveedoresController extends Controller
 {
+    //Constantes
+    private const NULLABLE_STRING_255 =  'nullable|string|max:255';
     // Obtener todos los proveedores
     public function index()
     {
-        return Proveedor::all();
+        $proveedores = Proveedor::with('contactos')->get();
+        return response()->json($proveedores);
     }
 
     // Crear un nuevo proveedor
@@ -20,11 +23,11 @@ class ProveedoresController extends Controller
         $request->validate([
             'ruc' => 'required|string|max:255',
             'razon_social' => 'required|string|max:1000',
-            'departamento' => 'nullable|string|max:255',
-            'provincia' => 'nullable|string|max:255',
-            'distrito' => 'nullable|string|max:255',
+            'departamento' => self::NULLABLE_STRING_255,
+            'provincia' => self::NULLABLE_STRING_255,
+            'distrito' => self::NULLABLE_STRING_255,
             'direccion' => 'nullable|string|max:1000',
-            'monto' => 'nullable|string|max:255',
+            'monto' => self::NULLABLE_STRING_255,
             'estado' => 'nullable|integer',
         ]);
 
@@ -35,7 +38,12 @@ class ProveedoresController extends Controller
     // Obtener un proveedor específico
     public function show($id)
     {
-        return Proveedor::findOrFail($id);
+        $proveeedor = Proveedor::with('contactos') -> find($id);
+
+        if(!$proveeedor){
+            return response()->json(['message' => 'Proveedor no encontrado'], 404);
+        }
+        return response() -> json($proveeedor, 201);
     }
 
     // Actualizar un proveedor existente
@@ -44,11 +52,11 @@ class ProveedoresController extends Controller
         $request->validate([
             'ruc' => 'required|string|max:255',
             'razon_social' => 'required|string|max:1000',
-            'departamento' => 'nullable|string|max:255',
-            'provincia' => 'nullable|string|max:255',
-            'distrito' => 'nullable|string|max:255',
+            'departamento' => self::NULLABLE_STRING_255,
+            'provincia' => self::NULLABLE_STRING_255,
+            'distrito' => self::NULLABLE_STRING_255,
             'direccion' => 'nullable|string|max:1000',
-            'monto' => 'nullable|string|max:255',
+            'monto' => self::NULLABLE_STRING_255,
             'estado' => 'nullable|integer',
         ]);
 

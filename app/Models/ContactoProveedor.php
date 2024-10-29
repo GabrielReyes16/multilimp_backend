@@ -19,4 +19,8 @@ class ContactoProveedor extends Model
         'id_cliente',
         'estado',
     ];
+
+    protected $hidden =[
+        'id_proveedor'
+    ];
 }
