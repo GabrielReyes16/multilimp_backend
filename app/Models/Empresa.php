@@ -51,4 +51,9 @@ class Empresa extends Model
     {
         $this->attributes['direcciones'] = $value;
     }
+        // Relación con CatalogoEmpresa
+        public function catalogos()
+        {
+            return $this->hasMany(CatalogoEmpresa::class, 'id_empresa');
+        }
 }
