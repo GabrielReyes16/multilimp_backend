@@ -35,4 +35,9 @@ class Cliente extends Model
 
     // Si la clave primaria no es un entero, deberías especificar su tipo
     protected $keyType = 'int';
+
+    public function contactos()
+    {
+        return $this->hasMany(ContactoCliente::class, 'id_cliente');
+    }
 }

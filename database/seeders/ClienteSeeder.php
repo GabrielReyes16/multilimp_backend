@@ -10,62 +10,6 @@ class ClienteSeeder extends Seeder
     public function run()
     {
         Cliente::create([
-            'id' => 5,
-            'ruc' => '10741381481',
-            'razon_social' => 'Alquimias',
-            'cod_unidad' => '34',
-            'departamento' => 'lima',
-            'provincia' => 'Lima',
-            'distrito' => 'Lima Centro',
-            'direccion' => 'MZ. E LT. 12 URB. SANTA CLARA LIMA - LIMA - ATE',
-            'estado' => NULL,
-            'created_at' => Carbon::parse('2024-01-11 16:26:50'),
-            'updated_at' => NULL,
-        ]);
-
-        Cliente::create([
-            'id' => 6,
-            'ruc' => '20609660491',
-            'razon_social' => 'Alquimia SAC',
-            'cod_unidad' => '12',
-            'departamento' => 'lima',
-            'provincia' => 'Lima',
-            'distrito' => 'Lima Centro',
-            'direccion' => 'AV. JUAN NICOLINI NRO. 186 URB. PALAO ET 1 LIMA - LIMA - SAN MARTIN DE PORRES',
-            'estado' => NULL,
-            'created_at' => Carbon::parse('2024-01-11 16:22:59'),
-            'updated_at' => NULL,
-        ]);
-
-        Cliente::create([
-            'id' => 7,
-            'ruc' => '234324324324',
-            'razon_social' => 'Parking',
-            'cod_unidad' => 'safas',
-            'departamento' => 'lima',
-            'provincia' => 'Callao',
-            'distrito' => 'Carmen de la Legua',
-            'direccion' => 'MZ. E LT. 12 URB. SANTA CLARA LIMA - LIMA - ATE',
-            'estado' => NULL,
-            'created_at' => Carbon::parse('2024-01-11 16:22:28'),
-            'updated_at' => NULL,
-        ]);
-
-        Cliente::create([
-            'id' => 8,
-            'ruc' => '20609660491',
-            'razon_social' => 'Baltalab',
-            'cod_unidad' => '234543',
-            'departamento' => 'lima',
-            'provincia' => 'Lima',
-            'distrito' => 'Lima Centro',
-            'direccion' => 'MZ. E LT. 12 URB. SANTA CLARA LIMA - LIMA - ATE',
-            'estado' => NULL,
-            'created_at' => Carbon::parse('2024-01-11 16:22:55'),
-            'updated_at' => NULL,
-        ]);
-
-        Cliente::create([
             'id' => 18,
             'ruc' => '20609660491',
             'razon_social' => 'Clinica fe',

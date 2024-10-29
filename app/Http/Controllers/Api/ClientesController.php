@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 
 class ClientesController extends Controller
 {
+    //Constantes
+    private const  SOME_REQ_STRING_255 = 'sometimes|required|string|max:255';
+    private const  REQ_STRING_255 ='required|string|max:255';
+    private const NULLABLE_STRING_255 = 'nullable|string|max:255';
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +19,7 @@ class ClientesController extends Controller
      */
     public function index()
     {
-        $clientes = Cliente::all();
+        $clientes = Cliente::with('contactos')->get();
         return response()->json($clientes);
     }
 
@@ -28,13 +32,13 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'ruc' => 'required|string|max:255',
-            'razon_social' => 'required|string|max:255',
-            'cod_unidad' => 'required|string|max:255',
-            'departamento' => 'nullable|string|max:255',
-            'provincia' => 'nullable|string|max:255',
-            'distrito' => 'nullable|string|max:255',
-            'direccion' => 'nullable|string|max:255',
+            'ruc' => self::REQ_STRING_255,
+            'razon_social' => self::REQ_STRING_255,
+            'cod_unidad' => self::REQ_STRING_255,
+            'departamento' => self::NULLABLE_STRING_255,
+            'provincia' => self::NULLABLE_STRING_255,
+            'distrito' => self::NULLABLE_STRING_255,
+            'direccion' => self::NULLABLE_STRING_255,
             'estado' => 'nullable|boolean',
         ]);
 
@@ -49,9 +53,14 @@ class ClientesController extends Controller
      * @param  \App\Models\Cliente  $cliente
      * @return \Illuminate\Http\Response
      */
-    public function show(Cliente $cliente)
+    public function show($id)
     {
-        return response()->json($cliente);
+        $cliente = Cliente::with('contactos') -> find($id);
+
+        if(!$cliente){
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
+        }
+        return response() -> json($cliente, 201);
     }
 
     /**
@@ -64,13 +73,13 @@ class ClientesController extends Controller
     public function update(Request $request, Cliente $cliente)
     {
         $validatedData = $request->validate([
-            'ruc' => 'sometimes|required|string|max:255',
-            'razon_social' => 'sometimes|required|string|max:255',
-            'cod_unidad' => 'sometimes|required|string|max:255',
-            'departamento' => 'nullable|string|max:255',
-            'provincia' => 'nullable|string|max:255',
-            'distrito' => 'nullable|string|max:255',
-            'direccion' => 'nullable|string|max:255',
+            'ruc' => self::SOME_REQ_STRING_255,
+            'razon_social' => self::SOME_REQ_STRING_255,
+            'cod_unidad' => self::SOME_REQ_STRING_255,
+            'departamento' => self::NULLABLE_STRING_255,
+            'provincia' => self::NULLABLE_STRING_255,
+            'distrito' => self::NULLABLE_STRING_255,
+            'direccion' => self::NULLABLE_STRING_255,
             'estado' => 'nullable|boolean',
         ]);
 
