@@ -21,4 +21,8 @@ class CotizacionProducto extends Model
         'total',
         'id_cotizacion',
     ];
+
+    protected $hidden = [
+        'id_cotizacion',
+    ];
 }

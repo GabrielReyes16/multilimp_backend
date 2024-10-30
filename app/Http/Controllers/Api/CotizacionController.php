@@ -20,17 +20,9 @@ class CotizacionController extends Controller
 
     public function index(Request $request)
     {
-        $cotizaciones = Cotizacion::all();
-        $clientes = Cliente::where('estado', '<>', 1)->orWhereNull('estado')->get();
-        $empresas = Empresa::where('estado', '<>', 1)->orWhereNull('estado')->get();
-        $contactos = ContactoCliente::where('estado', '<>', 1)->orWhereNull('estado')->get();
+        $cotizaciones = Cotizacion::with('productos')->get();
 
-        return response()->json([
-            'cotizaciones' => $cotizaciones,
-            'clientes' => $clientes,
-            'empresas' => $empresas,
-            'contactos' => $contactos
-        ], 200);
+        return response()->json($cotizaciones, 200);
     }
 
     public function store(Request $request)
@@ -76,13 +68,14 @@ class CotizacionController extends Controller
 
     public function show($id)
     {
-        $cotizacion = Cotizacion::find($id);
+        $cotizacion = Cotizacion::with('productos')->find($id);
+
 
         if (!$cotizacion) {
             return response()->json(['error' => self::NOT_FOUND], 404);
         }
 
-        return response()->json($cotizacion, 200);
+        return response()->json($cotizacion, 201);
     }
 
     public function update(Request $request, $id)

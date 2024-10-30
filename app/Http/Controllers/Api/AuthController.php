@@ -27,4 +27,12 @@ class AuthController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        Auth::logout(); // Esto invalidará el token actual.
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+
 }

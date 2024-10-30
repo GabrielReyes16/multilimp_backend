@@ -25,8 +25,19 @@ use App\Http\Controllers\Api\CotizacionController;
 use App\Http\Controllers\Api\CotizacionProductosController;
 
 
+//Users
+Route::apiResource('users', UsersController::class);
+//Permisos del usuario
+Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
+
+//Autenticacion
+// Autenticacion
+Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout']);
 
 
+
+//Configuracion
 //Empresas
 Route::apiResource('empresas', EmpresasController::class);
 
@@ -39,16 +50,8 @@ Route::apiResource('transportes', TransportesController::class);
 //Proveedores
 Route::apiResource('proveedores', ProveedoresController::class);
 
-//Users
-Route::apiResource('users', UsersController::class);
 
-Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
-
-
-
-//Roles
-Route::apiResource('roles', RolesController::class);
-
+//PROCESOS
 //PROCESO VENTAS
 //Contras
 Route::apiResource('contras', ContrasController::class);
@@ -61,6 +64,7 @@ Route::apiResource('catalogo_empresas', CatalogoEmpresasController::class);
 
 //Seguimientos
 Route::apiResource('seguimientos', SeguimientosController::class);
+
 
 //PROCESO OP
 //ContactoProveedores
