@@ -34,4 +34,20 @@ class Cotizacion extends Model
         {
             return $this->hasMany(CotizacionProducto::class, 'id_cotizacion');
         }
+
+        //Relaciones con empresas, clientes y contacto_clientes
+        public function empresa()
+        {
+            return $this->belongsTo(Empresa::class, 'id_empresa');
+        }
+
+        public function cliente()
+        {
+            return $this->belongsTo(Cliente::class, 'id_cliente');
+        }
+
+        public function contactoCliente()
+        {
+            return $this->belongsTo(ContactoCliente::class, 'id_contacto_cliente');
+        }
 }

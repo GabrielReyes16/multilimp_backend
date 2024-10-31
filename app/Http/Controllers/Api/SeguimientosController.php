@@ -25,7 +25,7 @@ class SeguimientosController extends Controller
     // Listar todos los seguimientos (GET)
     public function index()
     {
-        $seguimientos = Seguimiento::with(['empresa', 'cliente'])->get();
+        $seguimientos = Seguimiento::with(['empresa', 'cliente', 'ordenPedido'])->get();
         return response()->json($seguimientos, 200);
     }
 
@@ -134,38 +134,13 @@ class SeguimientosController extends Controller
 
     public function show($id)
     {
-        try {
-            // Obtener la contraseña (por ejemplo, para validar acceso)
-            $contra = Contra::find(1);
+        $seguimiento = Seguimiento::with('empresa', 'cliente', 'ordenPedido')->find($id);
 
-            // Obtener el seguimiento específico, lanzar error 404 si no se encuentra
-            $seguimiento = Seguimiento::findOrFail($id);
-
-            // Obtener los clientes cuyo estado no sea 1 o que tengan estado nulo
-            $clientes = Cliente::where('estado', '<>', 1)->orWhereNull('estado')->get();
-
-            // Obtener las empresas cuyo estado no sea 1 o que tengan estado nulo
-            $empresas = Empresa::where('estado', '<>', 1)->orWhereNull('estado')->get();
-
-            // Obtener los contactos del cliente asociado al seguimiento
-            $contactos = ContactoCliente::where('id_cliente', '=', $seguimiento->id_cliente)->get();
-
-            // Retornar los datos en formato JSON con código 200 (OK)
-            return response()->json([
-                'contra' => $contra,
-                'seguimiento' => $seguimiento,
-                'clientes' => $clientes,
-                'empresas' => $empresas,
-                'contactos' => $contactos,
-            ], 200);
-
-        } catch (ModelNotFoundException $e) {
-            // Si no se encuentra el seguimiento, retornar mensaje de error con código 404 (No encontrado)
+        if (!$seguimiento)
+        {
             return response()->json(['message' => self::NOT_FOUND_MSG], 404);
-        } catch (\Exception $e) {
-            // Retornar mensaje genérico de error si ocurre algún otro problema con código 500 (Error interno)
-            return response()->json(['message' => self::INTERNAL_SERVER_ERROR, 'error' => $e->getMessage()], 500);
         }
+        return response() -> json($seguimiento, 201);
     }
 
     // Actualizar un seguimiento (PUT/PATCH)

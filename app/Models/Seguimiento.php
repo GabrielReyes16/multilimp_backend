@@ -36,4 +36,10 @@ class Seguimiento extends Model
         return $this->belongsTo(Empresa::class, 'id_empresa');
     }
 
+    //Relacion para ver las OP ligadas al seguimiento
+    public function ordenPedido()
+    {
+        return $this->hasOne(OrdenPedido::class, 'id_seguimiento');
+    }
+
 }
