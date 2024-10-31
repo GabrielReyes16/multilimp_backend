@@ -50,14 +50,15 @@ class User extends Authenticatable implements JWTSubject
         return $this->rol === 'admin';
     }
 
-    // Relación con permisosProcesos y permisosConfiguracion
+    // Relación con permisos de proceso
     public function permisosProcesos()
     {
-        return $this->belongsToMany(PermisoProceso::class, 'user_permiso_proceso');
+        return $this->belongsToMany(PermisoProceso::class, 'user_permiso_proceso', 'user_id', 'permiso_proceso_id');
     }
 
+    // Relación con permisos de configuración
     public function permisosConfiguracion()
     {
-        return $this->belongsToMany(PermisoConfiguracion::class, 'user_permiso_configuracion');
+        return $this->belongsToMany(PermisoConfiguracion::class, 'user_permiso_configuracion', 'user_id', 'permiso_configuracion_id');
     }
 }

@@ -24,6 +24,8 @@ use App\Http\Controllers\Api\OrdenPedidoController;
 use App\Http\Controllers\Api\CotizacionController;
 use App\Http\Controllers\Api\CotizacionProductosController;
 
+use App\Http\Middleware\CheckPermissions;
+
 
 //Users
 Route::apiResource('users', UsersController::class);
@@ -39,16 +41,15 @@ Route::post('logout', [AuthController::class, 'logout']);
 
 //Configuracion
 //Empresas
-Route::apiResource('empresas', EmpresasController::class);
-
-//Clientes
-Route::apiResource('clientes', ClientesController::class);
+Route::middleware(['auth:api', CheckPermissions::class])->group(function () {
+    Route::apiResource('empresas', EmpresasController::class)->names('empresas');
+    Route::apiResource('clientes', ClientesController::class)->names('clientes');
+    Route::apiResource('transportes', TransportesController::class)->names('transportes');
+    Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');
+});
 
 //Transportes
-Route::apiResource('transportes', TransportesController::class);
 
-//Proveedores
-Route::apiResource('proveedores', ProveedoresController::class);
 
 
 //PROCESOS

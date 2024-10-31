@@ -25,9 +25,10 @@ class SeguimientosController extends Controller
     // Listar todos los seguimientos (GET)
     public function index()
     {
-        $seguimientos = Seguimiento::all();
+        $seguimientos = Seguimiento::with(['empresa', 'cliente'])->get();
         return response()->json($seguimientos, 200);
     }
+
 
     // Crear un nuevo seguimiento (POST)
     public function store(Request $request)

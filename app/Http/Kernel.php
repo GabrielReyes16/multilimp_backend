@@ -24,6 +24,16 @@ class Kernel extends HttpKernel
     ];
 
     /**
+     * The application's route middleware.
+     *
+     * @var array<string, array<int, class-string|string>>
+     */
+    protected $routeMiddleware = [
+        // Otros middlewares...
+        'check.permissions' => \App\Http\Middleware\CheckPermissions::class,
+    ];
+
+    /**
      * The application's route middleware groups.
      *
      * @var array<string, array<int, class-string|string>>
@@ -34,7 +44,6 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
-
 
     /**
      * The application's middleware aliases.

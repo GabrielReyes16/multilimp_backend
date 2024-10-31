@@ -24,4 +24,16 @@ class Seguimiento extends Model
         'proxima_gestion', 'estado_activo', 'estado_facturacion', 'estado_tesoreria',
         'inicio_cobranza', 'fin_cobranza'
     ];
+
+    //Relaciones para traer datos de cliente y de empresa
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'id_cliente');
+    }
+
+    public function empresa()
+    {
+        return $this->belongsTo(Empresa::class, 'id_empresa');
+    }
+
 }
