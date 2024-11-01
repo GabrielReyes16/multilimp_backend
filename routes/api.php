@@ -41,12 +41,10 @@ Route::post('logout', [AuthController::class, 'logout']);
 
 //Configuracion
 //Empresas
-Route::middleware(['auth:api', CheckPermissions::class])->group(function () {
     Route::apiResource('empresas', EmpresasController::class)->names('empresas');
     Route::apiResource('clientes', ClientesController::class)->names('clientes');
     Route::apiResource('transportes', TransportesController::class)->names('transportes');
     Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');
-});
 
 //Transportes
 
