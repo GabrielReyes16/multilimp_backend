@@ -20,7 +20,7 @@ class CotizacionController extends Controller
 
     public function index(Request $request)
     {
-        $cotizaciones = Cotizacion::with('productos')->get();
+        $cotizaciones = Cotizacion::with('productos', 'empresa', 'cliente', 'contactoCliente' )->get();
 
         return response()->json($cotizaciones, 200);
     }

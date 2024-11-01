@@ -35,6 +35,11 @@ class DatabaseSeeder extends Seeder
             //Users
             PermisosConfiguracionSeeder::class,
             PermisosProcesosSeeder::class,
+
+            //Seeders para un admin
+            UserSeeder::class,
+            PermissionsSeeder::class,
+
         ]);
     }
 }
