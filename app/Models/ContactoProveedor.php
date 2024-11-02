@@ -16,7 +16,7 @@ class ContactoProveedor extends Model
         'telefono',
         'correo',
         'cargo',
-        'id_cliente',
+        'id_proveedor',
         'estado',
     ];
 

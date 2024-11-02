@@ -13,60 +13,80 @@ class ContactoClientesController extends Controller
     private const STRING_255 = 'string|max:255';
     public function index()
     {
-        $contactos = ContactoCliente::all();
+        // Obtener todos los contactos y agruparlos por 'id_cliente'
+        $contactos = ContactoCliente::all()->groupBy('id_cliente');
+
         return response()->json($contactos, 200);
     }
 
-    // Obtener un registro específico por ID
+
     public function show($id)
     {
-        $contacto = ContactoCliente::find($id);
+        // Obtener todos los contactos que pertenecen al id_cliente especificado
+        $contactos = ContactoCliente::where('id_cliente', $id)->get();
 
-        if (!$contacto) {
-            return response()->json(['message' => 'Contacto de Cliente no encontrado'], 404);
+        if ($contactos->isEmpty()) {
+            return response()->json(['message' => 'Contactos de Cliente no encontrados'], 404);
         }
 
-        return response()->json($contacto, 200);
+        return response()->json($contactos, 200);
     }
+
 
     // Crear un nuevo registro de contacto_clientes
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombre' => self::REQ_STRING_255,
-            'telefono' => self::REQ_STRING_255,
-            'correo' => 'required|string|email|max:255',
-            'cargo' => self::REQ_STRING_255,
-            'id_cliente' => self::REQ_STRING_255,
-            'estado' => 'nullable|integer',
+            'contactos' => 'required|array',
+            'contactos.*.nombre' => self::REQ_STRING_255,
+            'contactos.*.telefono' => self::REQ_STRING_255,
+            'contactos.*.correo' => 'required|string|email|max:255',
+            'contactos.*.cargo' => self::REQ_STRING_255,
+            'contactos.*.id_cliente' => 'required|integer|exists:clientes,id',
+            'contactos.*.estado' => 'nullable|integer',
         ]);
 
-        $contacto = ContactoCliente::create($validatedData);
-
-        return response()->json($contacto, 201);
-    }
-
-    // Actualizar un registro existente
-    public function update(Request $request, $id)
-    {
-        $contacto = ContactoCliente::find($id);
-
-        if (!$contacto) {
-            return response()->json(['message' => 'ContactoCliente no encontrado'], 404);
+        // Crear cada contacto
+        $contactos = [];
+        foreach ($validatedData['contactos'] as $contactoData) {
+            $contactos[] = ContactoCliente::create($contactoData);
         }
 
+        return response()->json($contactos, 201);
+    }
+
+
+    // Actualizar un registro existente
+    public function update(Request $request, $id_cliente)
+    {
         $validatedData = $request->validate([
-            'nombre' => self::STRING_255,
-            'telefono' => self::STRING_255,
-            'correo' => 'string|email|max:255',
-            'cargo' => self::STRING_255,
-            'id_cliente' => self::STRING_255,
-            'estado' => 'nullable|integer',
+            'contactos' => 'required|array',
+            'contactos.*.id' => 'required|integer|exists:contacto_clientes,id',
+            'contactos.*.nombre' => self::STRING_255,
+            'contactos.*.telefono' => self::STRING_255,
+            'contactos.*.correo' => 'string|email|max:255',
+            'contactos.*.cargo' => self::STRING_255,
+            'contactos.*.estado' => 'nullable|integer',
         ]);
 
-        $contacto->update($validatedData);
+        $updatedContactos = [];
 
-        return response()->json($contacto, 200);
+        foreach ($validatedData['contactos'] as $contactoData) {
+            $contacto = ContactoCliente::where('id', $contactoData['id'])
+                        ->where('id_cliente', $id_cliente)
+                        ->first();
+
+            if ($contacto) {
+                $contacto->update($contactoData);
+                $updatedContactos[] = $contacto;
+            }
+        }
+
+        if (empty($updatedContactos)) {
+            return response()->json(['message' => 'No se encontraron contactos para actualizar'], 404);
+        }
+
+        return response()->json($updatedContactos, 200);
     }
 
     // Eliminar un registro
