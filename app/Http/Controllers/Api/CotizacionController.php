@@ -25,6 +25,20 @@ class CotizacionController extends Controller
         return response()->json($cotizaciones, 200);
     }
 
+
+    public function show($id)
+    {
+        $cotizacion = Cotizacion::with('productos','empresa', 'cliente', 'contactoCliente')->find($id);
+
+
+        if (!$cotizacion) {
+            return response()->json(['error' => self::NOT_FOUND], 404);
+        }
+
+        return response()->json($cotizacion, 201);
+    }
+
+
     public function store(Request $request)
     {
         // Inicializar $fechaEntrega como null
@@ -66,17 +80,6 @@ class CotizacionController extends Controller
         return response()->json(['message' => 'Cotización guardada con éxito', 'cotizacion' => $datos], 201);
     }
 
-    public function show($id)
-    {
-        $cotizacion = Cotizacion::with('productos')->find($id);
-
-
-        if (!$cotizacion) {
-            return response()->json(['error' => self::NOT_FOUND], 404);
-        }
-
-        return response()->json($cotizacion, 201);
-    }
 
     public function update(Request $request, $id)
     {
