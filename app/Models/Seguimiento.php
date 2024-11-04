@@ -41,5 +41,14 @@ class Seguimiento extends Model
     {
         return $this->hasOne(OrdenPedido::class, 'id_seguimiento');
     }
+    public function  contactoCobrador()
+    {
+        return $this -> hasOne(User::class,  'id', 'contacto_cobrador');
+    }
+
+    public function contactoCliente()
+    {
+        return $this-> hasOne(ContactoCliente::class, 'id', 'contacto_cliente');
+    }
 
 }

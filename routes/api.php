@@ -49,7 +49,6 @@ Route::post('logout', [AuthController::class, 'logout']);
 //Transportes
 
 
-
 //PROCESOS
 //PROCESO VENTAS
 //Contras

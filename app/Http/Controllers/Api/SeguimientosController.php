@@ -25,10 +25,21 @@ class SeguimientosController extends Controller
     // Listar todos los seguimientos (GET)
     public function index()
     {
-        $seguimientos = Seguimiento::with(['empresa', 'cliente', 'ordenPedido'])->get();
+        $seguimientos = Seguimiento::with(['empresa', 'cliente', 'ordenPedido', 'contactoCobrador', 'contactoCliente'])->get();
         return response()->json($seguimientos, 200);
     }
 
+
+    public function show($id)
+    {
+        $seguimiento = Seguimiento::with('empresa', 'cliente', 'ordenPedido','contactoCobrador', 'contactoCliente')->find($id);
+
+        if (!$seguimiento)
+        {
+            return response()->json(['message' => self::NOT_FOUND_MSG], 404);
+        }
+        return response() -> json($seguimiento, 201);
+    }
 
     // Crear un nuevo seguimiento (POST)
     public function store(Request $request)
@@ -130,17 +141,6 @@ class SeguimientosController extends Controller
             $statusCode = 500;
         }
         return response()->json($response, $statusCode);
-    }
-
-    public function show($id)
-    {
-        $seguimiento = Seguimiento::with('empresa', 'cliente', 'ordenPedido')->find($id);
-
-        if (!$seguimiento)
-        {
-            return response()->json(['message' => self::NOT_FOUND_MSG], 404);
-        }
-        return response() -> json($seguimiento, 201);
     }
 
     // Actualizar un seguimiento (PUT/PATCH)
