@@ -18,6 +18,7 @@ class CotizacionController extends Controller
     private const NOT_FOUND = 'Cotización no encontrada';
     private const MONTO_PATTERN = "/[^0-9.-]/";
 
+
     public function index(Request $request)
     {
         $cotizaciones = Cotizacion::with('productos', 'empresa', 'cliente', 'contactoCliente' )->get();
@@ -48,7 +49,7 @@ class CotizacionController extends Controller
         if ($request->filled('fecha_entrega')) {
             try {
                 // Intentar convertir la fecha de entrega de d/m/Y a Y-m-d
-                $fechaEntrega = Carbon::createFromFormat('d/m/Y', $request->fecha_entrega)->format('Y-m-d');
+                $fechaEntrega = Carbon::createFromFormat('d-m-Y', $request->fecha_entrega)->format('Y-m-d');
             } catch (InvalidFormatException $e) {
                 return response()->json(['error' => 'Formato de fecha no válido'], 400);
             }
@@ -90,7 +91,7 @@ class CotizacionController extends Controller
         if ($request->filled('fecha_entrega')) {
             try {
                 // Intentar convertir la fecha de entrega de d/m/Y a Y-m-d
-                $fechaEntrega = Carbon::createFromFormat('d/m/Y', $request->fecha_entrega)->format('Y-m-d');
+                $fechaEntrega = Carbon::createFromFormat('d-m-Y', $request->fecha_entrega)->format('Y-m-d');
             } catch (InvalidFormatException $e) {
                 return response()->json(['error' => 'Formato de fecha no válido'], 400);
             }
