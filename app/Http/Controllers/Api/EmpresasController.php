@@ -36,7 +36,7 @@ class EmpresasController extends Controller
             'provincia' => self::NULLABLE_STRING,
             'distrito' => self::NULLABLE_STRING,
             'direccion' => self::NULLABLE_STRING,
-            'logo' => 'nullable|file|mimes:png,jpg,jpeg',
+            'logo' => 'nullable|image|mimes:png,jpg,jpeg',
             'correo' => 'nullable|email',
             'web' => self::NULLABLE_STRING,
             'direcciones' => self::NULLABLE_STRING,
