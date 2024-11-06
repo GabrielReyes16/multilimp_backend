@@ -77,7 +77,9 @@ class TransportesController extends Controller
      */
     public function destroy(Transporte $transporte)
     {
-        $transporte->delete(); // Elimina el transporte
-        return response()->json(null, 204); // Retorna respuesta vacía
+        $transporte->estado = 0;
+        $transporte->save();
+
+        return response()->json(['message' => 'Transporte desactivado correctamente']); // Retorna respuesta vacía
     }
 }
