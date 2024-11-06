@@ -66,10 +66,11 @@ class ProveedoresController extends Controller
     }
 
     // Eliminar un proveedor
-    public function destroy($id)
+    public function destroy(Proveedor $proveedor)
     {
-        $proveedor = Proveedor::findOrFail($id);
-        $proveedor->delete();
-        return response()->json(null, 204);
+        $proveedor -> estado = 0;
+        $proveedor->save();
+
+        return response()->json(['message' => 'Proveedor desactivado exitosamente']);
     }
 }
