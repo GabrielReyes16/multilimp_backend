@@ -96,8 +96,10 @@ class ClientesController extends Controller
      */
     public function destroy(Cliente $cliente)
     {
-        $cliente->delete();
+        $cliente->estado = 0; // Cambia el estado a inactivo (eliminación lógica)
+        $cliente->save();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Cliente desactivado exitosamente'], 200);
     }
+
 }
