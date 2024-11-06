@@ -42,6 +42,8 @@ Route::post('logout', [AuthController::class, 'logout']);
 //Configuracion
 //Empresas
     Route::apiResource('empresas', EmpresasController::class)->names('empresas');
+    Route::get('empresas/{id}/logo', [EmpresasController::class, 'getLogo']);
+
     Route::apiResource('clientes', ClientesController::class)->names('clientes');
     Route::apiResource('transportes', TransportesController::class)->names('transportes');
     Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');

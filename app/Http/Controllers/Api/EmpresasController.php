@@ -70,6 +70,25 @@ class EmpresasController extends Controller
 
     return response()->json($empresa, 201);
 }
+public function getLogo($id)
+{
+    $empresa = Empresa::find($id);
+
+    if (!$empresa || !$empresa->logo) {
+        return response()->json(['message' => self::NOT_FOUND], 404);
+    }
+
+    // Obtiene la ruta completa del logo desde el almacenamiento público
+    $path = storage_path('app/public/' . $empresa->logo);
+
+    if (!file_exists($path)) {
+        return response()->json(['message' => 'Logo file not found'], 404);
+    }
+
+    // Retorna el archivo de imagen como una respuesta
+    return response()->file($path);
+}
+
 
     /**
      * Update the specified resource in storage.
