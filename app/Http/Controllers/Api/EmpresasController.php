@@ -124,15 +124,10 @@ public function getLogo($id)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Empresa $empresa)
     {
-        $empresa = Empresa::find($id);
-
-        if (!$empresa) {
-            return response()->json(['message' => self::NOT_FOUND], 404);
-        }
-
-        $empresa->delete();
-        return response()->json(['message' => 'Empresa deleted successfully'], 200);
+        $empresa-> estado = 0;
+        $empresa ->save();
+        return response()->json(['message' => 'Empresa desactivada exitosamente'], 200);
     }
 }
