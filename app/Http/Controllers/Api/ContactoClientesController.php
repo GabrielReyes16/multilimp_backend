@@ -60,33 +60,25 @@ class ContactoClientesController extends Controller
     public function update(Request $request, $id_cliente)
     {
         $validatedData = $request->validate([
-            'contactos' => 'required|array',
-            'contactos.*.id' => 'required|integer|exists:contacto_clientes,id',
-            'contactos.*.nombre' => self::STRING_255,
-            'contactos.*.telefono' => self::STRING_255,
-            'contactos.*.correo' => 'string|email|max:255',
-            'contactos.*.cargo' => self::STRING_255,
-            'contactos.*.estado' => 'nullable|integer',
+            'id' => 'required|integer|exists:contacto_clientes,id',
+            'nombre' => self::STRING_255,
+            'telefono' => self::STRING_255,
+            'correo' => 'string|email|max:255',
+            'cargo' => self::STRING_255,
+            'estado' => 'nullable|integer',
         ]);
 
-        $updatedContactos = [];
-
-        foreach ($validatedData['contactos'] as $contactoData) {
-            $contacto = ContactoCliente::where('id', $contactoData['id'])
+        $contacto = ContactoCliente::where('id', $validatedData['id'])
                         ->where('id_cliente', $id_cliente)
                         ->first();
 
-            if ($contacto) {
-                $contacto->update($contactoData);
-                $updatedContactos[] = $contacto;
-            }
+        if (!$contacto) {
+            return response()->json(['message' => 'No se encontró el contacto para actualizar'], 404);
         }
 
-        if (empty($updatedContactos)) {
-            return response()->json(['message' => 'No se encontraron contactos para actualizar'], 404);
-        }
+        $contacto->update($validatedData);
 
-        return response()->json($updatedContactos, 200);
+        return response()->json($contacto, 200);
     }
 
     // Eliminar un registro
