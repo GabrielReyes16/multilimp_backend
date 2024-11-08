@@ -52,8 +52,6 @@ class EmpresasController extends Controller
             $request->file('logo')->storeAs('logos', $nombreLogo, 'public' );
         }
 
-
-
         $empresa = Empresa::create($validatedData);
         return response()->json($empresa, 200);
     }
