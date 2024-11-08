@@ -24,68 +24,45 @@ use App\Http\Controllers\Api\OrdenPedidoController;
 use App\Http\Controllers\Api\CotizacionController;
 use App\Http\Controllers\Api\CotizacionProductosController;
 
-use App\Http\Middleware\CheckPermissions;
+//Dashboard
+use App\Http\Controllers\Api\DashboardController;
 
+//DASHBOARD
+Route::prefix('dashboard')->group(function () {
+    Route::get('OC_today', [DashboardController::class, 'OC_today']);
+    Route::get('OC_WithoutFechaFactura', [DashboardController::class, 'OC_WithoutFechaFactura']);
+    Route::get('cotizacionesToday', [DashboardController::class, 'cotizacionesHoy']);
+});
 
-//Users
-Route::apiResource('users', UsersController::class);
-//Permisos del usuario
-Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
-
-//Autenticacion
-// Autenticacion
+//AUTH
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 
-
-
-//Configuracion
-//Empresas
-    Route::apiResource('empresas', EmpresasController::class)->names('empresas');
-    Route::get('empresas/{id}/logo', [EmpresasController::class, 'getLogo']);
-
-    Route::apiResource('clientes', ClientesController::class)->names('clientes');
-    Route::apiResource('transportes', TransportesController::class)->names('transportes');
-    Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');
-
-//Transportes
-
+//CONFIGURACION
+Route::apiResource('users', UsersController::class);
+Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
+Route::apiResource('clientes', ClientesController::class)->names('clientes');
+Route::apiResource('transportes', TransportesController::class)->names('transportes');
+Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');
+///Contactos
+Route::apiResource('contacto_clientes', ContactoClientesController::class);
+Route::apiResource('contacto_proveedores', ContactoProveedoresController::class);
+Route::apiResource('contacto_transportes', ContactoTransportesController::class);
+//Empresa
+Route::apiResource('empresas', EmpresasController::class)->names('empresas');
+Route::get('empresas/{id}/logo', [EmpresasController::class, 'getLogo']);
+Route::apiResource('catalogo_empresas', CatalogoEmpresasController::class);
 
 //PROCESOS
 //PROCESO VENTAS
-//Contras
 Route::apiResource('contras', ContrasController::class);
-
-//ContactoClientes
-Route::apiResource('contacto_clientes', ContactoClientesController::class);
-
-//CatalogoEmpresas
-Route::apiResource('catalogo_empresas', CatalogoEmpresasController::class);
-
-//Seguimientos
 Route::apiResource('seguimientos', SeguimientosController::class);
 
-
-//PROCESO OP
-//ContactoProveedores
-Route::apiResource('contacto_proveedores', ContactoProveedoresController::class);
-
-//ContactoTransportes
-Route::apiResource('contacto_transportes', ContactoTransportesController::class);
-
-//OpProveedores
+//OP
 Route::apiResource('op_producto', OpProductoController::class);
-
-//OrdenPedidos
 Route::apiResource('orden_pedido', OrdenPedidoController::class);
-
-//SeguimientoOp
 Route::apiResource('seguimientos_op', SeguimientosController::class);
 
-
 //PROCESO COTIZAZCION
-//Cotizacion
 Route::apiResource('cotizacion', CotizacionController::class);
-
-//Cotizacion Productos
 Route::apiResource('cot_productos', CotizacionProductosController::class);

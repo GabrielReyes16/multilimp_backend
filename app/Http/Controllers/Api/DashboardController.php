@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 //Modelos empleados
-use\App\Models\Seguimiento;
+use App\Models\Seguimiento;
 use App\Models\Cotizacion;
 
 class DashboardController extends Controller
