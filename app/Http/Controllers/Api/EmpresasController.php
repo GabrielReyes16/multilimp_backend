@@ -49,8 +49,9 @@ class EmpresasController extends Controller
             $nombreLogo = $request-> file('logo')->getClientOriginalName();
             $path = 'logos/'. $nombreLogo;
             $validatedData['logo'] = $path;
+            $request->file('logo')->storeAs('logos', $nombreLogo, 'public' );
         }
-        $request->file('logo')->storeAs('logos', $nombreLogo, 'public' );
+
 
 
         $empresa = Empresa::create($validatedData);
