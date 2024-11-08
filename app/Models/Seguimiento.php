@@ -24,6 +24,7 @@ class Seguimiento extends Model
         'proxima_gestion', 'estado_activo', 'estado_facturacion', 'estado_tesoreria',
         'inicio_cobranza', 'fin_cobranza'
     ];
+    public $timestamps = true;
 
     //Relaciones para traer datos de cliente y de empresa
     public function cliente()

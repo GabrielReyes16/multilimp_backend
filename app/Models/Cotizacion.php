@@ -30,6 +30,8 @@ class Cotizacion extends Model
         // Indicar el nombre de la tabla
         protected $table = 'cotizaciones';
 
+        public $timestamps = true;
+
         public function productos()
         {
             return $this->hasMany(CotizacionProducto::class, 'id_cotizacion');
