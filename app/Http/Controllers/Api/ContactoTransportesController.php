@@ -11,7 +11,6 @@ class ContactoTransportesController extends Controller
 {
     private const STRING_255 = 'string|max:255';
     private const NOT_FOUND = 'Contacto no encontrado';
-    private const REQ_STRING_255 = 'required|string|max:255';
 
     // Método para obtener todos los contactos de transporte
     public function index()
@@ -38,10 +37,10 @@ class ContactoTransportesController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombre' => self::REQ_STRING_255,
-            'telefono' => self::REQ_STRING_255,
-            'correo' => 'required|string|email|max:255',
-            'cargo' => self::REQ_STRING_255,
+            'nombre' => self::STRING_255,
+            'telefono' => self::STRING_255,
+            'correo' => self::STRING_255,
+            'cargo' => self::STRING_255,
             'id_transporte' => 'required|integer|exists:transportes,id',
             'estado' => 'nullable|integer',
         ]);
@@ -60,7 +59,7 @@ class ContactoTransportesController extends Controller
             'id' => 'required|integer|exists:contacto_transportes,id',
             'nombre' => self::STRING_255,
             'telefono' => self::STRING_255,
-            'correo' => 'string|email|max:255',
+            'correo' => 'string|max:255',
             'cargo' => self::STRING_255,
             'estado' => 'nullable|integer',
         ]);

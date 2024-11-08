@@ -10,6 +10,7 @@ use App\Models\ContactoProveedor;
 
 class ContactoProveedoresController extends Controller
 {
+    private const STRING_255 = 'string|max:255';
     private const NOT_FOUND = 'Contactos de Proveedor no encontrados';
 
     // Método para obtener todos los contactos de proveedores
@@ -34,9 +35,9 @@ class ContactoProveedoresController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombre' => 'nullable|string|max:255',
+            'nombre' => self::STRING_255,
             'telefono' => 'nullable|string|max:50',
-            'correo' => 'nullable|email|max:255',
+            'correo' => self::STRING_255,
             'cargo' => 'nullable|string|max:100',
             'id_proveedor' => 'nullable|integer|exists:proveedores,id',
             'estado' => 'nullable|integer',
@@ -53,9 +54,9 @@ class ContactoProveedoresController extends Controller
     {
         $validatedData = $request -> validate([
             'id' => 'required|integer|exists:contacto_proveedores,id',
-            'nombre' => 'nullable|string|max:255',
+            'nombre' => self::STRING_255,
             'telefono' => 'nullable|string|max:50',
-            'correo' => 'nullable|email|max:255',
+            'correo' => self::STRING_255,
             'cargo' => 'nullable|string|max:100',
             'estado' => 'nullable|integer',
         ]);

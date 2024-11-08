@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 class ContactoClientesController extends Controller
 {
     //Constantes
-    private const REQ_STRING_255 = 'required|string|max:255';
     private const STRING_255 = 'string|max:255';
     public function index()
     {
@@ -37,10 +36,10 @@ class ContactoClientesController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombre' => self::REQ_STRING_255,
-            'telefono' => self::REQ_STRING_255,
-            'correo' => 'required|string|email|max:255',
-            'cargo' => self::REQ_STRING_255,
+            'nombre' => self::STRING_255,
+            'telefono' => self::STRING_255,
+            'correo' => self::STRING_255,
+            'cargo' => self::STRING_255,
             'id_cliente' => 'required|integer|exists:clientes,id',
             'estado' => 'nullable|integer',
         ]);
@@ -58,7 +57,7 @@ class ContactoClientesController extends Controller
             'id' => 'required|integer|exists:contacto_clientes,id',
             'nombre' => self::STRING_255,
             'telefono' => self::STRING_255,
-            'correo' => 'string|email|max:255',
+            'correo' => self::STRING_255,
             'cargo' => self::STRING_255,
             'estado' => 'nullable|integer',
         ]);
