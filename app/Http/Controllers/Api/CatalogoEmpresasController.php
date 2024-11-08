@@ -34,45 +34,31 @@ class CatalogoEmpresasController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'catalogos' => 'required|array',
-            'catalogos.*.codigo' => 'required|string|max:255',
-            'catalogos.*.id_empresa' => 'required|integer|exists:empresas,id',
+            'codigo' => 'required|string|max:255',
+            'id_empresa' => 'required|integer|exists:empresas,id',
         ]);
 
-        //Crear cada catalogo
-        $catalogos = [];
-        foreach ($validatedData['catalogos'] as $catalogoData) {
-            $catalogos[] = CatalogoEmpresa::create($catalogoData);
-        }
-
-        return response()->json($catalogos, 201);
+        //Crear  catalogo
+        $catalogo = CatalogoEmpresa::create($validatedData);
+        return response()->json($catalogo, 201);
     }
 
     // Actualizar un registro existente
     public function update(Request $request, $id_empresa)
     {
         $validatedData = $request->validate([
-            'catalogos' => 'required|array',
-            'catalogos.*.id' => 'required|integer|exists:catalogo_empresas,id',
-            'catalogos.*.codigo' => 'string|max:255',
+            'id' => 'required|integer|exists:catalogo_empresas,id',
+            'codigo' => 'string|max:255',
         ]);
 
-        $updatedCatalogos = [];
-        foreach ($validatedData['catalogos'] as $contactoData) {
-            $contacto = CatalogoEmpresa::where('id', $contactoData['id'])
-                        ->where('id_empresa', $id_empresa)
-                        ->first();
+        $catalogo = CatalogoEmpresa::where('id', $validatedData['id']) ->where('id_empresa', $id_empresa)-> first();
 
-            if ($contacto) {
-                $contacto->update($contactoData);
-                $updatedCatalogos[] = $contacto;
-            }
+        if (!$catalogo) {
+            return response()->json(['message' => self::NOT_FOUND], 404);
         }
-        if (empty($updatedCatalogos)) {
-            return response()->json(['message' => 'No se encontraron catalogos para actualizar'], 404);
-        }
+        $catalogo->update($validatedData);
 
-        return response()->json($updatedCatalogos, 200);
+        return response()->json($catalogo, 200);
     }
 
     // Eliminar un registro
