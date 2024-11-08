@@ -8,6 +8,7 @@ use Carbon\Carbon;
 
 //Modelos empleados
 use\App\Models\Seguimiento;
+use App\Models\Cotizacion;
 
 class DashboardController extends Controller
 {
@@ -31,4 +32,15 @@ class DashboardController extends Controller
             'sinFechaFactura' => $sinFechaFactura
         ]);
     }
+
+        // Cotizaciones realizadas hoy
+        public function cotizacionesToday()
+        {
+            $hoy = Carbon::today();
+            $cotizacionesHoy = Cotizacion::whereDate('created_at', $hoy)->count();
+
+            return response()->json([
+                'cotizacionesHoy' => $cotizacionesHoy
+            ]);
+        }
 }
