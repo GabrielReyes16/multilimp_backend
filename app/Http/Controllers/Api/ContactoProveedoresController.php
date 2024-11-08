@@ -10,7 +10,7 @@ use App\Models\ContactoProveedor;
 
 class ContactoProveedoresController extends Controller
 {
-    private const STRING_255 = 'string|max:255';
+    private const STRING_255 = 'nullable|string|max:255';
     private const NOT_FOUND = 'Contactos de Proveedor no encontrados';
 
     // Método para obtener todos los contactos de proveedores

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\ContactoTransporte;
 class ContactoTransportesController extends Controller
 {
-    private const STRING_255 = 'string|max:255';
+    private const STRING_255 = 'nullable|string|max:255';
     private const NOT_FOUND = 'Contacto no encontrado';
 
     // Método para obtener todos los contactos de transporte

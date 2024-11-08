@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class ContactoClientesController extends Controller
 {
     //Constantes
-    private const STRING_255 = 'string|max:255';
+    private const STRING_255 = 'nullable|string|max:255';
     public function index()
     {
         // Obtener todos los contactos y agruparlos por 'id_cliente'
