@@ -22,10 +22,5 @@ class ContactoTransporte extends Model
         'updated_at',
     ];
 
-    public $timestamps = true; // Activar timestamps si se usa 'created_at' y 'updated_at'
-
-    protected $hidden =[
-        'id_transporte'
-    ];
-
+    public $timestamps = true;
 }

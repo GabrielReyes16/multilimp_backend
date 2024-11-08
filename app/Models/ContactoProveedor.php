@@ -20,7 +20,4 @@ class ContactoProveedor extends Model
         'estado',
     ];
 
-    protected $hidden =[
-        'id_proveedor'
-    ];
 }
