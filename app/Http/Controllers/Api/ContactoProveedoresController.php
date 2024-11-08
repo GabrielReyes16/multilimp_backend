@@ -34,56 +34,40 @@ class ContactoProveedoresController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'contactos' => 'required|array',
-            'contactos.*.nombre' => 'nullable|string|max:255',
-            'contactos.*.telefono' => 'nullable|string|max:50',
-            'contactos.*.correo' => 'nullable|email|max:255',
-            'contactos.*.cargo' => 'nullable|string|max:100',
-            'contactos.*.id_proveedor' => 'nullable|integer|exists:proveedores,id',
-            'contactos.*.estado' => 'nullable|integer',
+            'nombre' => 'nullable|string|max:255',
+            'telefono' => 'nullable|string|max:50',
+            'correo' => 'nullable|email|max:255',
+            'cargo' => 'nullable|string|max:100',
+            'id_proveedor' => 'nullable|integer|exists:proveedores,id',
+            'estado' => 'nullable|integer',
         ]);
 
         //Crear cada contacto
+        $contacto = ContactoProveedor::create($validatedData);
 
-        $contactos = [];
-        foreach ($validatedData['contactos'] as $contactoData) {
-            $contactos[] = ContactoProveedor::create($contactoData);
-        }
-
-        return response()->json($contactos, 201);
+        return response()->json($contacto, 201);
     }
 
     // Método para actualizar un contacto de proveedor
     public function update(Request $request, $id_proveedor)
     {
-        $validatedData = $request->validate([
-            'contactos' => 'required|array',
-            'contactos.*.id' => 'required|integer|exists:contacto_proveedores,id',
-            'contactos.*.nombre' => 'nullable|string|max:255',
-            'contactos.*.telefono' => 'nullable|string|max:50',
-            'contactos.*.correo' => 'nullable|email|max:255',
-            'contactos.*.cargo' => 'nullable|string|max:100',
-            'contactos.*.estado' => 'nullable|integer',
+        $validatedData = $request -> validate([
+            'id' => 'required|integer|exists:contacto_proveedores,id',
+            'nombre' => 'nullable|string|max:255',
+            'telefono' => 'nullable|string|max:50',
+            'correo' => 'nullable|email|max:255',
+            'cargo' => 'nullable|string|max:100',
+            'estado' => 'nullable|integer',
         ]);
-        $updatedContactos = [];
 
-        foreach ($validatedData['contactos'] as $contactoData) {
-            $contacto = ContactoProveedor::where('id', $contactoData['id'])
-                        ->where('id_proveedor', $id_proveedor)
-                        ->first();
-            if (!$contacto) {
-                return response()->json(['message' => self::NOT_FOUND], 404);
-            }
-            if ($contacto)
-            {
-                $contacto->update($contactoData);
-                $updatedContactos[] = $contacto;
+        $contacto = ContactoProveedor::where('id', $validatedData['id'])->where('id_proveedor', $id_proveedor)->first();
+
+        if(!$contacto){
+            return response()->json(['message' => self::NOT_FOUND], 404);
         }
-        }
-        if (empty($updatedContactos)) {
-            return response()->json(['message' => 'No se encontraron contactos para actualizar'], 404);
-        }
-        return response(' Actualizado correctamente')->json($updatedContactos, 200);
+        $contacto->update($validatedData);
+
+        return response()->json($contacto, 200);
 
     }
 

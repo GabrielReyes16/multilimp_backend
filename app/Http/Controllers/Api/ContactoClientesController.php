@@ -37,22 +37,17 @@ class ContactoClientesController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'contactos' => 'required|array',
-            'contactos.*.nombre' => self::REQ_STRING_255,
-            'contactos.*.telefono' => self::REQ_STRING_255,
-            'contactos.*.correo' => 'required|string|email|max:255',
-            'contactos.*.cargo' => self::REQ_STRING_255,
-            'contactos.*.id_cliente' => 'required|integer|exists:clientes,id',
-            'contactos.*.estado' => 'nullable|integer',
+            'nombre' => self::REQ_STRING_255,
+            'telefono' => self::REQ_STRING_255,
+            'correo' => 'required|string|email|max:255',
+            'cargo' => self::REQ_STRING_255,
+            'id_cliente' => 'required|integer|exists:clientes,id',
+            'estado' => 'nullable|integer',
         ]);
 
-        // Crear cada contacto
-        $contactos = [];
-        foreach ($validatedData['contactos'] as $contactoData) {
-            $contactos[] = ContactoCliente::create($contactoData);
-        }
+        $contacto = ContactoCliente::create($validatedData);
 
-        return response()->json($contactos, 201);
+        return response()->json($contacto, 201);
     }
 
 

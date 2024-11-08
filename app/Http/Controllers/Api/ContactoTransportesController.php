@@ -38,22 +38,18 @@ class ContactoTransportesController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'contactos' => 'required|array',
-            'contactos.*.nombre' => self::REQ_STRING_255,
-            'contactos.*.telefono' => self::REQ_STRING_255,
-            'contactos.*.correo' => 'required|string|email|max:255',
-            'contactos.*.cargo' => self::REQ_STRING_255,
-            'contactos.*.id_transporte' => 'required|integer|exists:transportes,id',
-            'contactos.*.estado' => 'nullable|integer',
+            'nombre' => self::REQ_STRING_255,
+            'telefono' => self::REQ_STRING_255,
+            'correo' => 'required|string|email|max:255',
+            'cargo' => self::REQ_STRING_255,
+            'id_transporte' => 'required|integer|exists:transportes,id',
+            'estado' => 'nullable|integer',
         ]);
 
-        // Crear cada contacto
-        $contactos = [];
-        foreach ($validatedData['contactos'] as $contactoData) {
-            $contactos[] = ContactoTransporte::create($contactoData);
-        }
+        $contacto = ContactoTransporte::create($validatedData);
 
-        return response()->json($contactos, 201);
+
+        return response()->json($contacto, 201);
     }
 
 
@@ -61,33 +57,22 @@ class ContactoTransportesController extends Controller
     public function update(Request $request, $id_transporte)
     {
         $validatedData = $request->validate([
-            'contactos' => 'required|array',
-            'contactos.*.id' => 'required|integer|exists:contacto_transportes,id',
-            'contactos.*.nombre' => self::STRING_255,
-            'contactos.*.telefono' => self::STRING_255,
-            'contactos.*.correo' => 'string|email|max:255',
-            'contactos.*.cargo' => self::STRING_255,
-            'contactos.*.estado' => 'nullable|integer',
+            'id' => 'required|integer|exists:contacto_transportes,id',
+            'nombre' => self::STRING_255,
+            'telefono' => self::STRING_255,
+            'correo' => 'string|email|max:255',
+            'cargo' => self::STRING_255,
+            'estado' => 'nullable|integer',
         ]);
 
-        $updatedContactos = [];
+       $contacto = ContactoTransporte::where('id', $validatedData['id'])->where('id_transporte', $id_transporte)->first();
 
-        foreach ($validatedData['contactos'] as $contactoData) {
-            $contacto = ContactoTransporte::where('id', $contactoData['id'])
-                        ->where('id_transporte', $id_transporte)
-                        ->first();
+       if(!$contacto){
+        return response()->json(['message' => self::NOT_FOUND], 404);
+       }
+       $contacto->update($validatedData);
 
-            if ($contacto) {
-                $contacto->update($contactoData);
-                $updatedContactos[] = $contacto;
-            }
-        }
-
-        if (empty($updatedContactos)) {
-            return response()->json(['message' => 'No se encontraron contactos para actualizar'], 404);
-        }
-
-        return response()->json($updatedContactos, 200);
+        return response()->json($contacto, 200);
     }
 
     // Método para eliminar un contacto de transporte
