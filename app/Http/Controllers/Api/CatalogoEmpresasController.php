@@ -34,7 +34,6 @@ class CatalogoEmpresasController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'id' => 'nullable|integer',
             'codigo' => 'nullable|string|max:255',
             'id_empresa' => 'required|integer|exists:empresas,id',
         ]);
