@@ -12,9 +12,9 @@ use App\Models\PermisoProceso;
 
 class UsersController extends Controller
 {
-    private const PROCESS_ID_NAME = 'permisosProcesos:id,nombre'; //Traer el ID y el nombre de los permisos de procesos
+    private const PROCESS_ID_NAME = 'permisosProcesos:id,nombre';
     private const CONFIG_ID_NAME = 'permisosConfiguracion:id,nombre';
-    private const NULLABLE_STRING_255 ='required|string|max:255';
+    private const NULLABLE_STRING_255 ='nullable|string|max:255';
     public function index()
     {
         // Obtener todos los usuarios con sus permisos
@@ -132,7 +132,7 @@ class UsersController extends Controller
         // Validar los datos del request (solo los campos del usuario)
         $validatedData = $request->validate([
             'username' => 'string|unique:users,username,' . $user->id,
-            'email' => 'string|email|unique:users,email,' . $user->id,
+            'email' => self::NULLABLE_STRING_255 . $user->id,
             'password' => 'string|nullable|min:6',
             'nombre' => self::NULLABLE_STRING_255,
             'apellido' => self::NULLABLE_STRING_255,
