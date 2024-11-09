@@ -8,31 +8,33 @@ use Auth;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    //Método para logear a un usuario
+    public function login (Request $request)
     {
         $credentials = $request->only('username', 'password');
 
         if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Credenciales incorrectas'], 401);
         }
 
-        return $this->respondWithToken($token);
-    }
-
-    protected function respondWithToken($token)
-    {
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'message' => 'Usuario logeado!',
+            'token' => $token,
+            'user' => Auth::user()
         ]);
     }
 
-    public function logout(Request $request)
-    {
-        Auth::logout(); // Esto invalidará el token actual.
-        return response()->json(['message' => 'Successfully logged out']);
-    }
+        // Método para cerrar sesión
+        public function logout()
+        {
+            Auth::logout();
 
+            return response()->json(['message' => 'Sesión cerrada correctamente']);
+        }
 
+        // Método para obtener información del usuario autenticado
+        public function me()
+        {
+            return response()->json(Auth::user());
+        }
 }

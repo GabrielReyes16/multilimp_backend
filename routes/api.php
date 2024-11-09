@@ -37,6 +37,7 @@ Route::prefix('dashboard')->group(function () {
 //AUTH
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
+Route::get('me', [AuthController::class, 'me']);
 
 //CONFIGURACION
 Route::apiResource('users', UsersController::class);
