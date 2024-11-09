@@ -33,4 +33,9 @@ class Proveedor extends Model
     {
         return $this -> hasMany(ContactoProveedor::class, 'id_proveedor');
     }
+
+    public function bancos()
+    {
+        return $this -> hasMany(BancoProveedores::class, 'id_proveedor');
+    }
 }

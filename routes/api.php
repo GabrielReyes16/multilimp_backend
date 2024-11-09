@@ -6,9 +6,9 @@ use App\Http\Controllers\Api\EmpresasController;
 use App\Http\Controllers\Api\ClientesController;
 use App\Http\Controllers\Api\TransportesController;
 use App\Http\Controllers\Api\ProveedoresController;
+use App\Http\Controllers\Api\BancoProveedoresController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\UserPermissionController;
-use App\Http\Controllers\Api\RolesController;
 //Proceso ventas
 use App\Http\Controllers\Api\ContrasController;
 use App\Http\Controllers\Api\ContactoClientesController;
@@ -45,6 +45,7 @@ Route::put('users/{userId}/permissions', [UserPermissionController::class, 'upda
 Route::apiResource('clientes', ClientesController::class)->names('clientes');
 Route::apiResource('transportes', TransportesController::class)->names('transportes');
 Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');
+Route::apiResource('banco_proveedores', BancoProveedoresController::class);
 ///Contactos
 Route::apiResource('contacto_clientes', ContactoClientesController::class);
 Route::apiResource('contacto_proveedores', ContactoProveedoresController::class);

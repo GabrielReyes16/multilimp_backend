@@ -13,7 +13,7 @@ class ProveedoresController extends Controller
     // Obtener todos los proveedores
     public function index()
     {
-        $proveedores = Proveedor::with('contactos')->get();
+        $proveedores = Proveedor::with('contactos', 'bancos')->get();
         return response()->json($proveedores);
     }
 
@@ -38,7 +38,7 @@ class ProveedoresController extends Controller
     // Obtener un proveedor específico
     public function show($id)
     {
-        $proveeedor = Proveedor::with('contactos') -> find($id);
+        $proveeedor = Proveedor::with('contactos', 'bancos') -> find($id);
 
         if(!$proveeedor){
             return response()->json(['message' => 'Proveedor no encontrado'], 404);
