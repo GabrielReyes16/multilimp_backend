@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('id_proveedor'); // Campo id_proveedor
             $table->string('numero_cuenta', 255)->nullable(); // Campo numero_cuenta
             $table->string('nombre_banco', 255)->nullable(); // Campo nombre_banco
-            $table->boolean('estado')->nullable()->default(true); // Campo estado
+            $table->boolean('estado')->nullable()->default(1); // Campo estado
             $table->timestamps(); // Campos created_at y updated_at
         });
     }

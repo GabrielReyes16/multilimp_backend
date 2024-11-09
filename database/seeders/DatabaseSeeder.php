@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             ClienteSeeder::class,
             EmpresaSeeder::class,
             ProveedorSeeder::class,
+            BancoProveedoresSeeder::class,
             TransporteSeeder::class,
             //Seeders para proceso ventas
             SeguimientosSeeder::class,
