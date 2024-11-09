@@ -53,13 +53,13 @@ class UsersController extends Controller
     {
         // Validación del request
         $user = User::create([
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'nombre' => $request->nombre,
-            'apellido' => $request->apellido,
-            'foto' => $request->fotoPerfil,
-            'rol' => $request->rol,
+            'username' => $request->username ?? null,
+            'email' => (string)$request->email ?? null,
+            'password' => $request->password ? bcrypt($request->password) : null,
+            'nombre' => $request->nombre ?? null,
+            'apellido' => $request->apellido ?? null,
+            'foto' => $request->fotoPerfil ?? null,
+            'rol' => $request->rol ?? null,
         ]);
 
         // Asignación de permisos de procesos
@@ -94,12 +94,12 @@ class UsersController extends Controller
         // Formatear la respuesta para incluir solo los campos necesarios
         $userData = [
             'id' => $user->id,
-            'username' => $user->username,
-            'email' => $user->email,
-            'nombre' => $user->nombre,
-            'apellido' => $user->apellido,
-            'foto' => $user->foto,
-            'rol' => $user->rol,
+            'username' => $user->username ?? null,
+            'email' => (string)$user->email ?? null,
+            'nombre' => $user->nombre ?? null,
+            'apellido' => $user->apellido ?? null,
+            'foto' => $user->foto ?? null,
+            'rol' => $user->rol ?? null,
             'permisosProcesos' => $user->permisosProcesos->map(function ($permiso) {
                 return [
                     'id' => $permiso->id,
