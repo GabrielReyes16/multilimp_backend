@@ -59,6 +59,7 @@ Route::apiResource('catalogo_empresas', CatalogoEmpresasController::class);
 //PROCESO VENTAS
 Route::apiResource('contras', ContrasController::class);
 Route::apiResource('seguimientos', SeguimientosController::class);
+Route::post('preProcess', [SeguimientosController::class, 'preProcess']);
 
 //OP
 Route::apiResource('op_producto', OpProductoController::class);

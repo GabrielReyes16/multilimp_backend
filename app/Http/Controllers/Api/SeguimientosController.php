@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
-use App\Models\ContactoCliente;
-use App\Models\Contra;
 use App\Models\Empresa;
 use App\Models\Seguimiento;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+
+//Lectura de PDF
+use Smalot\PdfParser\Parser;
 
 class SeguimientosController extends Controller
 {
@@ -40,6 +41,148 @@ class SeguimientosController extends Controller
         }
         return response() -> json($seguimiento, 201);
     }
+
+    //Preprocesamiento de pdf
+    public function preProcess(Request $request)
+    {
+        // Validar que el archivo esté presente y sea PDF
+        $validator = Validator::make($request->all(), [
+            'pdf_file' => 'required|file|mimes:pdf',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'El archivo es obligatorio y debe ser un PDF.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $parser = new Parser();
+            $pdf = $parser->parseFile($request->file('pdf_file')->getPathname());
+            $text = $pdf->getText();
+
+            // Extraer información del texto (esto puede requerir ajustes según el formato del PDF)
+            $data = [
+                // fecha maxima del plazo de entrega
+                'fecha_max_form' => $this->extractDate($text, 'Fecha Máxima Formulario'),
+                //monto de la venta
+                'monto_venta' => $this->extractAmount($text, 'Monto venta'),
+                // //lugar de entrega
+                'cdireccion' => $this->extractValue($text, 'Direccion'),
+                'cdepartamento' => $this->extractValue($text, 'Departamento'),
+                'cprovincia' => $this->extractValue($text, 'Provincia'),
+                'cdistrito' => $this->extractValue($text, 'Distrito'),
+                // //OP PERU COMPRAS
+                // 'productos' => $this->extractProducts($text, 'Productos'),
+                // //Expediente siaf
+                'siaf' => $this->extractValue($text, 'SIAF'),
+            ];
+
+            return response()->json([
+                'message' => 'Datos extraídos correctamente.',
+                'data' => $data,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al procesar el archivo PDF.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    protected function extractDate($text, $field)
+    {
+        if ($field === 'Fecha Máxima Formulario' && preg_match('/Plazo de entrega\s*:\s*Del\s*\d{2}\/\d{2}\/\d{4}\s*al\s*(\d{2}\/\d{2}\/\d{4})/', $text, $matches)) {
+            return $matches[1];
+        }
+
+        return null; // Retorna null si no encuentra la fecha
+    }
+
+    protected function extractAmount($text, $field)
+    {
+        if ($field ==='Monto venta' && preg_match('/IMPORTE TOTAL \(PEN\)\s*([\d,]+\.\d{2})/', $text, $matches)) {
+            return str_replace (',', '.', $matches[1]);
+        }
+    }
+    protected function extractValue($text, $field)
+{
+    switch($field) {
+        default: $value = null;
+        break;
+
+        case 'Direccion':
+            $value = null; // Inicializamos la variable
+            if (preg_match('/Domicilio Fiscal\s*:\s*(.*?)(?=\s*Ubigeo)/s', $text, $matches)) {
+                $value = trim($matches[1]);
+                $value = str_replace("\n", " ", $value);
+            }
+            break;
+
+        case 'Distrito':
+            if (preg_match('/Ubigeo\s*:\s*(\S+)/', $text, $matches)) {
+                $value = trim($matches[1]);
+            }
+            break;
+
+        case 'Provincia':
+            if (preg_match('/Ubigeo\s*:\s*[^\/]+\/\s*(\S+)/', $text, $matches)) {
+                $value = trim($matches[1]);
+            }
+            break;
+
+        case 'Departamento':
+            if (preg_match('/Ubigeo\s*:\s*.*\/\s*(\S+)/', $text, $matches)) {
+                $value = trim($matches[1]);
+            }
+            break;
+
+        case 'SIAF':
+                if(preg_match('/Expediente SIAF\s*:\s*(\S+)/', $text, $matches)){
+                    $value = trim($matches[1]);
+                }
+                break;
+    }
+    return $value;
+}
+
+// protected function extractProducts($text, $field)
+// {
+//     if ($field === 'Productos') {
+//         // Encuentra la posición de "Importe (PEN)" y captura el texto que sigue
+//         $startPosition = strpos($text, 'Importe (PEN)');
+//         if ($startPosition === false) {
+//             return []; // Si no se encuentra "Importe (PEN)", retorna un arreglo vacío
+//         }
+
+//         // Extrae el texto después de "Importe (PEN)"
+//         $text = substr($text, $startPosition);
+
+//         // Expresión regular para capturar la cantidad (primer número entero sin letras después)
+//         // y la información hasta "IMPORTE TOTAL (PEN)"
+//         preg_match('/\b(\d+)\b\s+(?![a-zA-Z])+(.*?)(?=IMPORTE TOTAL \(PEN\))/s', $text, $matches);
+
+//         if (!empty($matches)) {
+//             $cantidad = trim($matches[1]); // Cantidad como primer número entero
+//             $informacion = trim($matches[2]); // Resto del texto como información del producto hasta "IMPORTE TOTAL (PEN)"
+
+//             return [
+//                 [
+//                     'cantidad' => $cantidad,
+//                     'informacion' => $informacion
+//                 ]
+//             ];
+//         }
+
+//         return []; // Retorna un arreglo vacío si no hay coincidencias
+//     }
+
+//     return null; // Retorna null si el campo no es "Productos"
+// }
+
+
+
+
 
     // Crear un nuevo seguimiento (POST)
     public function store(Request $request)
