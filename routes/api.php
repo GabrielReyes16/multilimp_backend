@@ -28,11 +28,6 @@ use App\Http\Controllers\Api\CotizacionProductosController;
 use App\Http\Controllers\Api\DashboardController;
 
 //DASHBOARD
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
 Route::prefix('dashboard')->group(function () {
     Route::get('OC_today', [DashboardController::class, 'OC_today']);
     Route::get('OC_WithoutFechaFactura', [DashboardController::class, 'OC_WithoutFechaFactura']);
