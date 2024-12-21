@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class ContrasController extends Controller
 {
     //Constantes
-    private const NOT_FOUND = self::STRING_255;
+    // private const NOT_FOUND = self::STRING_255;
     // Listar todas las contras
     public function index()
     {
