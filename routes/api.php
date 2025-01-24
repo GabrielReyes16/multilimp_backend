@@ -24,6 +24,9 @@ use App\Http\Controllers\Api\OrdenPedidoController;
 use App\Http\Controllers\Api\CotizacionController;
 use App\Http\Controllers\Api\CotizacionProductosController;
 
+//Proceso Tesoreria
+use App\Http\Controllers\Api\TesoreriaController;
+
 //Dashboard
 use App\Http\Controllers\Api\DashboardController;
 
@@ -39,7 +42,6 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 Route::get('me', [AuthController::class, 'me']);
 
-//CONFIGURACION
 Route::apiResource('users', UsersController::class);
 Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
 Route::apiResource('clientes', ClientesController::class)->names('clientes');
@@ -69,3 +71,18 @@ Route::apiResource('seguimientos_op', SeguimientosController::class);
 //PROCESO COTIZAZCION
 Route::apiResource('cotizacion', CotizacionController::class);
 Route::apiResource('cot_productos', CotizacionProductosController::class);
+
+//TESORERIA
+Route::prefix('tesoreria')->group(function () {
+    // Registrar un nuevo registro de tesorería
+    Route::post('/registro', [TesoreriaController::class, 'registro']);
+
+    // Obtener un registro de tesorería por ID
+    Route::get('/{id}', [TesoreriaController::class, 'show']);
+
+    // Traer información para editar un registro
+    Route::get('/{id}/edit', [TesoreriaController::class, 'edit']);
+
+    // Actualizar un registro de tesorería
+    Route::put('/{tesoreria}', [TesoreriaController::class, 'update']);
+});
