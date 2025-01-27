@@ -9,21 +9,17 @@ use App\Models\Tesoreria;
 
 class TesoreriaController extends Controller
 {
-    // Constantes de validación
-    private const REQ_STRING_255 = 'required|string|max:255';
-    private const REQ_INT = 'required|integer';
-
     // Insertar un nuevo registro de tesorería
     public function registro(Request $request)
     {
         $request->validate([
             'fecha_pago' => 'required|date',
-            'banco' => self::REQ_STRING_255,
-            'descripcion' => self::REQ_STRING_255,
+            'banco' => 'required|string|max:255',
+            'descripcion' => 'required|string|max:255',
             'total' => 'required|numeric',
-            'id_orden_pedido' => self::REQ_INT,
-            'id_seguimiento' => self::REQ_INT,
-            'estado' => self::REQ_INT,
+            'id_orden_pedido' => 'required|integer',
+            'id_seguimiento' => 'required|integer',
+            'estado' => 'required|integer',
         ]);
 
         $tesoreria = Tesoreria::create($request->all());
@@ -55,12 +51,12 @@ class TesoreriaController extends Controller
     {
         $request->validate([
             'fecha_pago' => 'required|date',
-            'banco' => self::REQ_STRING_255,
-            'descripcion' => self::REQ_STRING_255,
+            'banco' => 'required|string|max:255',
+            'descripcion' => 'required|string|max:255',
             'total' => 'required|numeric',
-            'id_orden_pedido' => self::REQ_INT,
-            'id_seguimiento' => self::REQ_INT,
-            'estado' => self::REQ_INT,
+            'id_orden_pedido' => 'required|integer',
+            'id_seguimiento' => 'required|integer',
+            'estado' => 'required|integer',
         ]);
 
         $tesoreria->update($request->all());

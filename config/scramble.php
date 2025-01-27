@@ -24,12 +24,12 @@ return [
         /*
          * API version.
          */
-        'version' => env('API_VERSION', '0.0.1'),
+        'version' => env('API_VERSION', ' Alfa'),
 
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'Documentacion de la api Multilimp',
+        'description' => 'Documentacion de la API Multilimp',
     ],
 
     /*
@@ -44,7 +44,7 @@ return [
         /*
          * Define the theme of the documentation. Available options are `light` and `dark`.
          */
-        'theme' => 'light',
+        'theme' => 'dark',
 
         /*
          * Hide the `Try It` feature. Enabled by default.

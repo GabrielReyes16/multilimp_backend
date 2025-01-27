@@ -27,6 +27,9 @@ use App\Http\Controllers\Api\CotizacionProductosController;
 //Proceso Tesoreria
 use App\Http\Controllers\Api\TesoreriaController;
 
+//Proceso Facturacion
+use App\Http\Controllers\Api\FacturacionController;
+
 //Dashboard
 use App\Http\Controllers\Api\DashboardController;
 
@@ -86,3 +89,6 @@ Route::prefix('tesoreria')->group(function () {
     // Actualizar un registro de tesorería
     Route::put('/{tesoreria}', [TesoreriaController::class, 'update']);
 });
+
+//FACTURACION
+Route::apiResource('facturacion', FacturacionController::class);
