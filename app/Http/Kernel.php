@@ -31,6 +31,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // Otros middlewares...
         'check.permissions' => \App\Http\Middleware\CheckPermissions::class,
+        'verify.token' => \App\Http\Middleware\VerifyToken::class,
     ];
 
     /**

@@ -34,61 +34,66 @@ use App\Http\Controllers\Api\FacturacionController;
 use App\Http\Controllers\Api\DashboardController;
 
 //DASHBOARD
-Route::prefix('dashboard')->group(function () {
-    Route::get('OC_today', [DashboardController::class, 'OC_today']);
-    Route::get('OC_WithoutFechaFactura', [DashboardController::class, 'OC_WithoutFechaFactura']);
-    Route::get('cotizacionesToday', [DashboardController::class, 'cotizacionesHoy']);
-});
 
 //AUTH
 Route::post('login', [AuthController::class, 'login']);
-Route::post('logout', [AuthController::class, 'logout']);
-Route::get('me', [AuthController::class, 'me']);
 
-Route::apiResource('users', UsersController::class);
-Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
-Route::apiResource('clientes', ClientesController::class)->names('clientes');
-Route::apiResource('transportes', TransportesController::class)->names('transportes');
-Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');
-Route::apiResource('banco_proveedores', BancoProveedoresController::class);
-///Contactos
-Route::apiResource('contacto_clientes', ContactoClientesController::class);
-Route::apiResource('contacto_proveedores', ContactoProveedoresController::class);
-Route::apiResource('contacto_transportes', ContactoTransportesController::class);
-//Empresa
-Route::apiResource('empresas', EmpresasController::class)->names('empresas');
-Route::get('empresas/{id}/logo', [EmpresasController::class, 'getLogo']);
-Route::apiResource('catalogo_empresas', CatalogoEmpresasController::class);
+Route::middleware('verify.token')->group(function () {
 
-//PROCESOS
-//PROCESO VENTAS
-Route::apiResource('contras', ContrasController::class);
-Route::apiResource('seguimientos', SeguimientosController::class);
-Route::post('preProcess', [SeguimientosController::class, 'preProcess']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('me', [AuthController::class, 'me']);
 
-//OP
-Route::apiResource('op_producto', OpProductoController::class);
-Route::apiResource('orden_pedido', OrdenPedidoController::class);
-Route::apiResource('seguimientos_op', SeguimientosController::class);
+    Route::prefix('dashboard')->group(function () {
+        Route::get('OC_today', [DashboardController::class, 'OC_today']);
+        Route::get('OC_WithoutFechaFactura', [DashboardController::class, 'OC_WithoutFechaFactura']);
+        Route::get('cotizacionesToday', [DashboardController::class, 'cotizacionesHoy']);
+    });
 
-//PROCESO COTIZAZCION
-Route::apiResource('cotizacion', CotizacionController::class);
-Route::apiResource('cot_productos', CotizacionProductosController::class);
+    Route::apiResource('users', UsersController::class);
+    Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
+    Route::apiResource('clientes', ClientesController::class)->names('clientes');
+    Route::apiResource('transportes', TransportesController::class)->names('transportes');
+    Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');
+    Route::apiResource('banco_proveedores', BancoProveedoresController::class);
+    ///Contactos
+    Route::apiResource('contacto_clientes', ContactoClientesController::class);
+    Route::apiResource('contacto_proveedores', ContactoProveedoresController::class);
+    Route::apiResource('contacto_transportes', ContactoTransportesController::class);
+    //Empresa
+    Route::apiResource('empresas', EmpresasController::class)->names('empresas');
+    Route::get('empresas/{id}/logo', [EmpresasController::class, 'getLogo']);
+    Route::apiResource('catalogo_empresas', CatalogoEmpresasController::class);
 
-//TESORERIA
-Route::prefix('tesoreria')->group(function () {
-    // Registrar un nuevo registro de tesorería
-    Route::post('/registro', [TesoreriaController::class, 'registro']);
+    //PROCESOS
+    //PROCESO VENTAS
+    Route::apiResource('contras', ContrasController::class);
+    Route::apiResource('seguimientos', SeguimientosController::class);
+    Route::post('preProcess', [SeguimientosController::class, 'preProcess']);
 
-    // Obtener un registro de tesorería por ID
-    Route::get('/{id}', [TesoreriaController::class, 'show']);
+    //OP
+    Route::apiResource('op_producto', OpProductoController::class);
+    Route::apiResource('orden_pedido', OrdenPedidoController::class);
+    Route::apiResource('seguimientos_op', SeguimientosController::class);
 
-    // Traer información para editar un registro
-    Route::get('/{id}/edit', [TesoreriaController::class, 'edit']);
+    //PROCESO COTIZAZCION
+    Route::apiResource('cotizacion', CotizacionController::class);
+    Route::apiResource('cot_productos', CotizacionProductosController::class);
 
-    // Actualizar un registro de tesorería
-    Route::put('/{tesoreria}', [TesoreriaController::class, 'update']);
+    //TESORERIA
+    Route::prefix('tesoreria')->group(function () {
+        // Registrar un nuevo registro de tesorería
+        Route::post('/registro', [TesoreriaController::class, 'registro']);
+
+        // Obtener un registro de tesorería por ID
+        Route::get('/{id}', [TesoreriaController::class, 'show']);
+
+        // Traer información para editar un registro
+        Route::get('/{id}/edit', [TesoreriaController::class, 'edit']);
+
+        // Actualizar un registro de tesorería
+        Route::put('/{tesoreria}', [TesoreriaController::class, 'update']);
+    });
+
+    //FACTURACION
+    Route::apiResource('facturacion', FacturacionController::class);
 });
-
-//FACTURACION
-Route::apiResource('facturacion', FacturacionController::class);
