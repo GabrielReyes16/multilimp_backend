@@ -35,8 +35,21 @@ class FacturacionSeeder extends Seeder
             'created_at' => Carbon::parse('2024-01-11'),
             'updated_at' => null,
         ]);
+        Facturacion::create([
+            'id_venta' => 2,
+            'factura' => 'F001-0003',
+            'fecha_factura' => Carbon::parse('2024-01-11'),
+            'grr' => 'GRR-0003',
+            'retencion' => '2',
+            'detraccion' => '4',
+            'forma_envio' => 'Correo',
+            'estado' => 1,
+            'created_at' => Carbon::parse('2024-01-11'),
+            'updated_at' => null,
+        ]);
 
 
+        //Refacturaciones
         Refacturacion::create([
             'id_facturacion' => 1,
             'id_venta' => 1,
