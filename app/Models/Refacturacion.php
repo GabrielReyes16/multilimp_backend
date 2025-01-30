@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Facturacion extends Model
+class Refacturacion extends Model
 {
     use HasFactory;
-    protected $table = "facturaciones";
+
+    protected $table = "refacturaciones";
 
     protected $fillable =
     [
+        'id_facturacion',
         'id_venta',
         'factura',
         'fecha_factura',
@@ -29,12 +31,12 @@ class Facturacion extends Model
 
     public $timestamps = true;
 
+    public function facturacion()
+    {
+        return $this->belongsTo(Facturacion::class, 'id_facturacion');
+    }
     public function venta()
     {
         return $this->belongsTo(Seguimiento::class, 'id_venta');
-    }
-public function refacturaciones()
-    {
-        return $this->hasMany(Refacturacion::class, 'id_facturacion');
     }
 }

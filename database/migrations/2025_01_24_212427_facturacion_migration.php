@@ -20,14 +20,24 @@ return new class extends Migration
             $table->decimal('retencion', 10, 2)->nullable();
             $table->decimal('detraccion', 10, 2)->nullable();
             $table->string('forma_envio')->nullable();
-            $table->string('re_factura')->nullable();
-            $table->date('re_fecha_factura')->nullable();
-            $table->string('re_grr')->nullable();
-            $table->decimal('re_detraccion', 10, 2)->nullable();
-            $table->decimal('re_retencion', 10, 2)->nullable();
-            $table->string('re_forma_envio')->nullable();
             $table->integer('estado')->nullable()->default(1);
             $table->timestamps();
+            $table->foreign('id_venta')->references('id')->on('seguimientos');
+        });
+
+        Schema::create('refacturaciones', function(Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_facturacion');
+            $table->unsignedBigInteger('id_venta');
+            $table->string('factura')->nullable();
+            $table->date('fecha_factura')->nullable();
+            $table->string('grr')->nullable();
+            $table->decimal('retencion', 10, 2)->nullable();
+            $table->decimal('detraccion', 10, 2)->nullable();
+            $table->string('forma_envio')->nullable();
+            $table->integer('estado')->nullable()->default(1);
+            $table->timestamps();
+            $table->foreign('id_facturacion')->references('id')->on('facturaciones');
             $table->foreign('id_venta')->references('id')->on('seguimientos');
         });
 
@@ -40,5 +50,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('facturaciones');
+        Schema::dropIfExists('refacturaciones');
     }
 };

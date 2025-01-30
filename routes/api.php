@@ -77,18 +77,24 @@ Route::apiResource('cot_productos', CotizacionProductosController::class);
 
 //TESORERIA
 Route::prefix('tesoreria')->group(function () {
+    //Listar todos los registros de tesorería
+    Route::get('/', [TesoreriaController::class, 'index']);
+
     // Registrar un nuevo registro de tesorería
     Route::post('/registro', [TesoreriaController::class, 'registro']);
 
     // Obtener un registro de tesorería por ID
     Route::get('/{id}', [TesoreriaController::class, 'show']);
 
-    // Traer información para editar un registro
-    Route::get('/{id}/edit', [TesoreriaController::class, 'edit']);
-
     // Actualizar un registro de tesorería
     Route::put('/{tesoreria}', [TesoreriaController::class, 'update']);
 });
 
 //FACTURACION
-Route::apiResource('facturacion', FacturacionController::class);
+Route::prefix('facturacion')->group(function () {
+    Route::get('/', [FacturacionController::class, 'index']);
+    Route::get('/{id}', [FacturacionController::class, 'show']);
+    Route::get('/actual/{id}', [FacturacionController::class, 'actual']);
+    Route::post('/', [FacturacionController::class, 'store']);
+    Route::put('/{facturacion}', [FacturacionController::class, 'cambiarEstado']);
+});

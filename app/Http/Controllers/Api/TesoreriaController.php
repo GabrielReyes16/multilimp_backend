@@ -9,6 +9,13 @@ use App\Models\Tesoreria;
 
 class TesoreriaController extends Controller
 {
+    //Listado general
+    public function index()
+    {
+        $tesorerias = Tesoreria::with('orden_pedido', 'seguimiento')->get();
+        return response()->json($tesorerias);
+    }
+
     // Insertar un nuevo registro de tesorería
     public function registro(Request $request)
     {

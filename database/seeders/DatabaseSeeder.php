@@ -33,6 +33,9 @@ class DatabaseSeeder extends Seeder
             CotizacionSeeder::class,
             CotizacionProductosSeeder::class,
 
+            //Seeders para facturacion'
+            FacturacionSeeder::class,
+
             //Users
             PermisosConfiguracionSeeder::class,
             PermisosProcesosSeeder::class,
