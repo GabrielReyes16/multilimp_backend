@@ -54,6 +54,7 @@ Route::get('me', [AuthController::class, 'me']);
 
 Route::apiResource('users', UsersController::class);
 Route::put('users/{userId}/permissions', [UserPermissionController::class, 'updatePermissions']);
+Route::post('users/{id}/upload-photo', [UsersController::class, 'uploadPhoto']);
 Route::apiResource('clientes', ClientesController::class)->names('clientes');
 Route::apiResource('transportes', TransportesController::class)->names('transportes');
 Route::apiResource('proveedores', ProveedoresController::class)->names('proveedores');

@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\PermisoConfiguracion;
 use App\Models\PermisoProceso;
 
-
 class UsersController extends Controller
 {
     private const PROCESS_ID_NAME = 'permisosProcesos:id,nombre';
     private const CONFIG_ID_NAME = 'permisosConfiguracion:id,nombre';
-    private const NULLABLE_STRING_255 ='nullable|string|max:255';
+    private const NULLABLE_STRING_255 = 'nullable|string|max:255';
     public function index()
     {
         // Obtener todos los usuarios con sus permisos
@@ -64,13 +63,10 @@ class UsersController extends Controller
 
         // Asignación de permisos de procesos
         $permisosProcesosIds = PermisoProceso::whereIn('nombre', $request->permisosProcesos)->pluck('id');
-
         $user->permisosProcesos()->sync($permisosProcesosIds);
 
         // Asignación de permisos de configuración
         $permisosConfiguracionIds = PermisoConfiguracion::whereIn('nombre', $request->permisosConfiguracion)->pluck('id');
-
-
         $user->permisosConfiguracion()->sync($permisosConfiguracionIds);
 
         // Cargar los permisos para la respuesta
@@ -115,7 +111,6 @@ class UsersController extends Controller
         ];
 
         return response()->json($userData, 200);
-
     }
 
     //ACTULIZAR UN USUARIO
@@ -163,5 +158,36 @@ class UsersController extends Controller
         ];
 
         return response()->json($userData, 200);
+    }
+
+    // ========================================================
+    // POST /users/{id}/upload-photo
+    public function uploadPhoto(Request $request, $id) {
+        $request->validate([
+            'file' => 'required|image|max:4096|mimes:jpeg,png,jpg',
+        ]);
+    
+        $user = User::findOrFail($id);
+    
+        // Eliminar imagen anterior
+        if ($user->foto) {
+            $oldPath = str_replace(env('APP_URL') . '/storage/', '', $user->foto);
+            Storage::disk('public')->delete($oldPath);
+        }
+    
+        // Guardar imagen
+        $path = $request->file('file')->store('users', 'public');
+    
+        // Construir URL manualmente
+        $backendUrl = env('APP_URL'); // Ej: http://localhost:8000
+        $absoluteUrl = $backendUrl . '/storage/' . $path;
+    
+        // Actualizar base de datos
+        $user->foto = $absoluteUrl;
+        $user->save();
+    
+        return response()->json([
+            'foto' => $absoluteUrl
+        ]);
     }
 }
