@@ -33,6 +33,13 @@ use App\Http\Controllers\Api\FacturacionController;
 //Dashboard
 use App\Http\Controllers\Api\DashboardController;
 
+//Cobranzas
+use App\Http\Controllers\Api\GestionCobranzaController;
+
+
+//Stock de productos
+use App\Http\Controllers\Api\ProductoStockController;
+
 //DASHBOARD
 Route::prefix('dashboard')->group(function () {
     Route::get('OC_today', [DashboardController::class, 'OC_today']);
@@ -98,3 +105,10 @@ Route::prefix('facturacion')->group(function () {
     Route::post('/', [FacturacionController::class, 'store']);
     Route::put('/{facturacion}', [FacturacionController::class, 'cambiarEstado']);
 });
+
+//Historial de gestiones(cobranzas)
+Route::apiResource('cobranzas', GestionCobranzaController::class);
+Route::get('cobranzas/{id}/downloaddoc', [GestionCobranzaController::class, 'downloadDocumento']);
+
+//Stock de productos
+Route::apiResource('stock', ProductoStockController::class);
